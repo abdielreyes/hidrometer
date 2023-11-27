@@ -6,7 +6,10 @@ import ErrorPage from "../utils/ErrorPage.jsx";
 import Dashboard from "../dashboard/Dashboard.jsx";
 import LandingPage from "../main/LandingPage.jsx";
 import HistoryPage from "../history/History.jsx";
+
 import UsersPage from "../user/UsersPage.jsx";
+import PrivacyPolicy from "../info/PrivacyPolicy.jsx";
+import TermsAndConditions from "../info/TermsAndConditions.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -20,6 +23,14 @@ const router = createBrowserRouter([
   {
     path: "/register",
     element: <RegisterPage />,
+  },
+  {
+    path: "/privacy",
+    element: <PrivacyPolicy />,
+  },
+  {
+    path: "/terms",
+    element: <TermsAndConditions />,
   },
   {
     path: "/dashboard",
