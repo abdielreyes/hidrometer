@@ -5,12 +5,8 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  address: {
-    type: String,
-    required: true,
-  },
-  zip: {
-    type: String,
+  postalCode: {
+    type: Number,
     required: true,
   },
   phone: {
@@ -19,8 +15,8 @@ const userSchema = new mongoose.Schema({
   },
   level: {
     type: String,
-    enum: ["Beginner", "Intermediate", "Advanced"],
-    default: "Beginner",
+    enum: ["User", "Operator", "Admin"],
+    default: "User",
   },
 });
 
