@@ -1,7 +1,7 @@
 const PrivacyPolicy = () => {
   return (
     <div className="bg-gray-100 min-h-screen flex items-center justify-center">
-      <div className="max-w-xl bg-white p-8 shadow-md rounded-md">
+      <div className="max-w-3xl bg-white p-8 shadow-md rounded-md">
         <h1 className="text-2xl font-bold mb-4">
           Aviso de Privacidad - Hidrometer
         </h1>

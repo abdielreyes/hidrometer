@@ -22,8 +22,9 @@ export default function LoginForm() {
         <h1 className="text-2xl font-bold sm:text-3xl">Registrarme</h1>
 
         <p className="mt-4 text-gray-500">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Et libero
-          nulla eaque error neque ipsa culpa autem, at itaque nostrum!
+          Protege a tu comunidad con Hidrometer. Recibe notificaciones cruciales
+          sobre el estado del agua de la seccion del río de los Remedios de tu
+          localidad. La información que salva vidas, al alcance de tu mano.
         </p>
       </div>
 
