@@ -6,16 +6,69 @@ import {
 } from "react-icons/fa6";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { BASE_URL } from "../utils/variables";
+import { toast } from "react-toastify";
 
 export default function LoginForm() {
   const [verified, setVerified] = useState(false);
   const { register, handleSubmit } = useForm();
   const onSubmit = (formData) => {
+    console.log(BASE_URL);
     if (!verified) {
       setVerified(true);
+      sendVerificationCode(formData.phone);
+    } else {
+      sendRegistration(formData);
     }
     console.log(formData);
   };
+  const sendVerificationCode = async (phone) => {
+    try {
+      console.log("Sending verification code to " + phone);
+
+      const response = await fetch(
+        BASE_URL + "/api/auth/registration/sendVerify",
+        {
+          method: "POST",
+          body: JSON.stringify({ phone: phone, channel: "sms" }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = await response.json();
+      console.log(data);
+      toast.success(data.message);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const sendRegistration = async (formData) => {
+    try {
+      const response = await fetch(BASE_URL + "/api/auth/registration/verify", {
+        method: "POST",
+        body: JSON.stringify(formData),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+      console.log(response);
+      if (response.status !== 200) {
+        toast.error(data.message);
+        return;
+      } else {
+        console.log(data);
+        toast.success(data.message);
+        window.localStorage.setItem("token", data.token);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div>
       <div className="mx-auto max-w-lg text-center">
@@ -29,7 +82,6 @@ export default function LoginForm() {
       </div>
 
       <form
-        action="/login"
         className="mx-auto mb-0 mt-8 max-w-md space-y-4"
         onSubmit={handleSubmit(onSubmit)}
       >
@@ -92,7 +144,7 @@ export default function LoginForm() {
 
             <div className="relative">
               <input
-                {...register("verificationCode", {
+                {...register("code", {
                   required: true,
                   type: "number",
                 })}

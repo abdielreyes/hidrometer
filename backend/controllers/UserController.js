@@ -1,22 +1,24 @@
-const UserModel = require("../models/UserModel");
+import User from "../models/User.js";
 
-export const createUser = async (req, res) => {
+export const createUser = async (user) => {
   try {
-    const newUser = new User(req.body);
+    const newUser = new User(user);
     const savedUser = await newUser.save();
-    res.status(201).json(savedUser);
+    return savedUser;
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error(error);
+    return null;
   }
 };
 
 // Controlador para obtener todos los usuarios
-export const getUsers = async (req, res) => {
+export const getUsers = async (params) => {
   try {
-    const users = await User.find();
-    res.status(200).json(users);
+    const users = await User.find(params);
+    return users;
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error);
+    return null;
   }
 };
 

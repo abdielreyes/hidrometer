@@ -22,11 +22,11 @@ mqttClient.on("message", (topic, message) => {
   console.log("MQTT <- ", topic, JSON.parse(message.toString()));
 });
 mqttClient.subscribe("hidrometer");
-const payload = {
-  sensorId: 1,
-  data: 3026,
-};
+// const payload = {
+//   sensorId: 1,
+//   data: 3026,
+// };
 
-mqttClient.publish("hidrometer", JSON.stringify(payload));
+// mqttClient.publish("hidrometer", JSON.stringify(payload));
 
 export default mqttClient;
