@@ -5,7 +5,7 @@ import {
   getUserById,
   updateUserById,
   deleteUserById,
-} from "../../controllers/UserController"; // Ajusta la ruta según la ubicación real de tu controlador
+} from "../../controllers/user.controller"; // Ajusta la ruta según la ubicación real de tu controlador
 
 const router = express.Router();
 

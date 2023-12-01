@@ -1,21 +1,26 @@
 import { useEffect, useState } from "react";
 import LineChart from "./RiverChart";
-
+import { BASE_URL } from "../utils/variables";
 function Dashboard() {
-  const [data, setData] = useState([0, 0, 0]);
-  const getRandomInt = (min, max) => {
-    return Math.floor(Math.random() * (max - min)) + min;
-  };
+  const [data, setData] = useState({
+    min: 0,
+    avg: 0,
+    max: 0,
+    current: 0,
+  });
   useEffect(() => {
     const interval = setInterval(() => {
-      setData([
-        getRandomInt(0, 30),
-        getRandomInt(30, 60),
-        getRandomInt(60, 100),
-      ]);
-    }, 3000);
+      fetch(`${BASE_URL}/api/sensor/`)
+        .then((res) => res.json())
+        .then((res) => {
+          const sensor = res.sensor1;
+          console.log(sensor);
+          setData(sensor);
+        });
+    }, 2000);
     return () => clearInterval(interval);
   });
+  useEffect(() => {}, []);
   return (
     <div className="px-8">
       <h2 className="text-4xl mb-8 font-bold mt-8 ">Dashboard</h2>
@@ -26,12 +31,12 @@ function Dashboard() {
           </dt>
 
           <dd className="text-4xl font-extrabold text-blue-600 md:text-5xl">
-            {data[1]} m
+            {data.current} m
           </dd>
         </div>{" "}
         <div className="grid grid-cols-1 gap-4 mb-8">
           <div className="rounded-lg  h-96 border pt-8 pb-8">
-            <LineChart />
+            <LineChart sensorData={data} />
           </div>
         </div>
         <div className="mt-8 mb-8 sm:mt-12">
@@ -42,7 +47,7 @@ function Dashboard() {
               </dt>
 
               <dd className="text-4xl font-extrabold text-blue-600 md:text-5xl">
-                {data[0]} m
+                {data.min} m
               </dd>
             </div>
 
@@ -52,7 +57,7 @@ function Dashboard() {
               </dt>
 
               <dd className="text-4xl font-extrabold text-blue-600 md:text-5xl">
-                {data[1]} m
+                {data.avg} m
               </dd>
             </div>
 
@@ -62,7 +67,7 @@ function Dashboard() {
               </dt>
 
               <dd className="text-4xl font-extrabold text-blue-600 md:text-5xl">
-                {data[2]} m
+                {data.max} m
               </dd>
             </div>
           </dl>

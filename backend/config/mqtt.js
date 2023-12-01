@@ -18,10 +18,9 @@ mqttClient.on("connect", () => {
 mqttClient.on("error", (err) => {
   console.log("MQTT error", err);
 });
-mqttClient.on("message", (topic, message) => {
-  console.log("MQTT <- ", topic, JSON.parse(message.toString()));
-});
-mqttClient.subscribe("hidrometer");
+// mqttClient.on("message", (topic, message) => {
+//   console.log("MQTT <- ", topic, JSON.parse(message.toString()));
+// });
 // const payload = {
 //   sensorId: 1,
 //   data: 3026,

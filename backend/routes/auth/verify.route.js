@@ -1,10 +1,10 @@
 import express from "express";
 const router = express.Router();
-import { client, TWILIO_SERVICE_SID } from "../../../config/twilio.js";
-import User from "../../../models/User.js";
-import { createUser, getUsers } from "../../../controllers/UserController.js";
+import { client, TWILIO_SERVICE_SID } from "../../config/twilio.js";
+import User from "../../models/user.model.js";
+import { createUser, getUsers } from "../../controllers/user.controller.js";
 import { get } from "mongoose";
-const { generateAccessToken } = require("../../../config/jwt.js");
+const { generateAccessToken } = require("../../config/jwt.js");
 
 router.post("/registration/sendVerify", async (req, res) => {
   try {

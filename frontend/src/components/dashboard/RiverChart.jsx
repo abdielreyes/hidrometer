@@ -10,40 +10,34 @@ import {
 const dataPre = [
   {
     name: new Date().toLocaleTimeString(),
-    uv: 4000,
-    pv: 2400,
-    amt: 2400,
+    uv: 0,
+    pv: 0,
+    amt: 0,
   },
 ];
-const LineCharts = () => {
+const max = 5;
+const LineCharts = ({ sensorData }) => {
   const [data, setData] = useState(dataPre);
-  const getRandomInt = (min, max) => {
-    return Math.floor(Math.random() * (max - min)) + min;
-  };
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setData((prevData) => {
-        const newData = [
-          ...prevData,
-          {
-            name: new Date().toLocaleTimeString(),
-            uv: getRandomInt(0, 6000),
-            pv: 4300,
-            amt: 2100,
-          },
-        ];
-        if (newData.length > 5) {
-          newData.shift(); // Eliminar el primer elemento
-        }
-        console.log("new data added");
-        return newData;
-      });
-    }, 2500);
+    setData((prevData) => {
+      const newData = [
+        ...prevData,
+        {
+          name: new Date().toLocaleTimeString(),
+          uv: sensorData.current,
+          pv: 4300,
+          amt: 2100,
+        },
+      ];
+      if (newData.length > max) {
+        newData.shift(); // Eliminar el primer elemento
+      }
+      return newData;
+    });
 
     // Limpiar el intervalo cuando el componente se desmonta
-    return () => clearInterval(interval);
-  }, []);
+  }, [sensorData]);
 
   return (
     <ResponsiveContainer width="100%" height="100%">

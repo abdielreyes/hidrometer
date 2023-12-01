@@ -2,11 +2,12 @@ import express from "express";
 const app = express();
 import bodyparser from "body-parser";
 import cors from "cors";
-import db from "./config/database.js";
+import { mongodb, redis } from "./config/database.js";
 import mqtt from "./config/mqtt.js";
-const PORT = Number(process.env.APP_PORT);
-
 import routes from "./routes/router.js";
+import Micro from "./controllers/micro.controller.js";
+
+const PORT = Number(process.env.APP_PORT);
 app.use(cors());
 app.use(bodyparser.json());
 app.use(
@@ -14,6 +15,7 @@ app.use(
     extended: false,
   })
 );
+
 app.use("/api", routes);
 app.post("/", (req, res) => {
   res.send(req.body);
