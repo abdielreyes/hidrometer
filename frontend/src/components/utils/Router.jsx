@@ -1,5 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
-import MainPage from "../main/MainPage.jsx";
+import { createBrowserRouter, Outlet } from "react-router-dom";
 import LoginPage from "../auth/LoginPage.jsx";
 import RegisterPage from "../auth/RegisterPage";
 import ErrorPage from "../utils/ErrorPage.jsx";
@@ -10,51 +9,63 @@ import HistoryPage from "../history/History.jsx";
 import UsersPage from "../user/UsersPage.jsx";
 import PrivacyPolicy from "../info/PrivacyPolicy.jsx";
 import TermsAndConditions from "../info/TermsAndConditions.jsx";
+
+import ProtectedRoutes from "./ProtectedRoutes.jsx";
+import Logout from "./Logout.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <LandingPage />,
+    element: <Outlet></Outlet>,
     errorElement: <ErrorPage />,
+    children: [
+      {
+        path: "",
+        element: <LandingPage />,
+      },
+      {
+        path: "login",
+        element: <LoginPage />,
+      },
+      {
+        path: "register",
+        element: <RegisterPage />,
+      },
+      {
+        path: "privacy",
+        element: <PrivacyPolicy />,
+      },
+      {
+        path: "terms",
+        element: <TermsAndConditions />,
+      },
+      {
+        path: "logout",
+        element: <Logout />,
+      },
+    ],
   },
   {
-    path: "/login",
-    element: <LoginPage />,
+    path: "/admin",
+    element: <ProtectedRoutes />,
+    children: [
+      {
+        path: "",
+        element: <Dashboard></Dashboard>,
+      },
+      {
+        path: "history",
+        element: <HistoryPage />,
+      },
+      {
+        path: "users",
+        element: <UsersPage />,
+      },
+    ],
   },
   {
-    path: "/register",
-    element: <RegisterPage />,
-  },
-  {
-    path: "/privacy",
-    element: <PrivacyPolicy />,
-  },
-  {
-    path: "/terms",
-    element: <TermsAndConditions />,
-  },
-  {
-    path: "/dashboard",
-    element: (
-      <MainPage>
-        <Dashboard></Dashboard>
-      </MainPage>
-    ),
-  },
-  {
-    path: "/history",
-    element: (
-      <MainPage>
-        <HistoryPage></HistoryPage>
-      </MainPage>
-    ),
-  },
-  {
-    path: "/users",
-    element: (
-      <MainPage>
-        <UsersPage></UsersPage>
-      </MainPage>
-    ),
+    path: "*",
+    element: <ErrorPage />,
   },
 ]);
+
 export default router;

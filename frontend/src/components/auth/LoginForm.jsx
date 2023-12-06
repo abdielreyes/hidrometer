@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { BASE_URL } from "../utils/variables";
+import axios from "axios";
 import { FaPhone, FaPhoneVolume } from "react-icons/fa6";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 export default function LoginForm() {
   const [verified, setVerified] = useState(false);
   const { register, handleSubmit, getValues } = useForm();
+  const navigate = useNavigate();
   const onSubmit = (formData) => {
     console.log(BASE_URL);
     if (!verified) {
@@ -35,18 +38,16 @@ export default function LoginForm() {
       console.error(error);
     }
   };
+
   const sendLogin = async (formData) => {
     try {
-      const response = await fetch(BASE_URL + "/api/auth/login/verify", {
-        method: "POST",
-        body: JSON.stringify({ phone: formData.phone, code: formData.code }),
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const response = await axios.post(BASE_URL + "/api/auth/login/verify", {
+        phone: formData.phone,
+        code: formData.code,
       });
 
-      const data = await response.json();
-      console.log(response);
+      const data = response.data;
+
       if (response.status !== 200) {
         toast.error(data.message);
         return;
@@ -54,6 +55,8 @@ export default function LoginForm() {
         console.log(data);
         toast.success(data.message);
         window.localStorage.setItem("token", data.token);
+        window.localStorage.setItem("user", JSON.stringify(data.user));
+        navigate("/admin");
       }
     } catch (error) {
       console.error(error);
