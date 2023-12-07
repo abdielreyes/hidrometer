@@ -3,7 +3,6 @@ const router = express.Router();
 import { client, TWILIO_SERVICE_SID } from "../../config/twilio.js";
 import User from "../../models/user.model.js";
 import { createUser, getUsers } from "../../controllers/user.controller.js";
-import { get } from "mongoose";
 import { generateAccessToken } from "../../config/jwt.js";
 router.post("/checkPhone", async (req, res) => {
   try {

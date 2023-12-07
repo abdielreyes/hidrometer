@@ -51,7 +51,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "",
-        element: <Dashboard></Dashboard>,
+        element: <MainPage><Dashboard></Dashboard></MainPage>,
       },
       {
         path: "history",
