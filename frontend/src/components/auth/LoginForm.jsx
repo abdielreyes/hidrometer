@@ -9,31 +9,63 @@ export default function LoginForm() {
   const [verified, setVerified] = useState(false);
   const { register, handleSubmit, getValues } = useForm();
   const navigate = useNavigate();
-  const onSubmit = (formData) => {
+  const onSubmit = async (formData) => {
     console.log(BASE_URL);
     if (!verified) {
-      setVerified(true);
-      sendVerificationCode(formData.phone);
+      if (await checkPhone(formData.phone)) {
+        console.log("Phone exists");
+        setVerified(true);
+        sendVerificationCode(formData.phone);
+      }
     } else {
       sendLogin(formData);
     }
     console.log(formData);
   };
+  const checkPhone = async (phone) => {
+    try {
+      const response = await axios.post(
+        BASE_URL + "/api/auth/checkPhone",
+        {
+          phone: phone,
+        },
+        {
+          validateStatus: false,
+        }
+      );
+      console.log(response);
+      const data = response.data;
+      if (response.status == 200) {
+        return true;
+      } else {
+        console.log("no existe", data);
+        toast.error(data.message);
+        return false;
+      }
+    } catch (error) {
+      console.error("Error", error);
+      return false;
+    }
+  };
   const sendVerificationCode = async (phone) => {
     try {
       console.log("Sending verification code to " + phone);
 
-      const response = await fetch(BASE_URL + "/api/auth/login/sendVerify", {
-        method: "POST",
-        body: JSON.stringify({ phone: phone, channel: "sms" }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
+      const response = await axios.post(
+        BASE_URL + "/api/auth/login/sendVerify",
+        {
+          phone: phone,
+          channel: "sms",
+        }
+      );
       const data = await response.json();
-      console.log(data);
-      toast.success(data.message);
+      if (response.status !== 200) {
+        toast.error(data.message);
+        return;
+      } else {
+        console.log(data);
+        toast.success(data.message);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -55,8 +87,7 @@ export default function LoginForm() {
         console.log(data);
         toast.success(data.message);
         window.localStorage.setItem("token", data.token);
-        window.localStorage.setItem("user", JSON.stringify(data.user));
-        navigate("/admin");
+        navigate("/");
       }
     } catch (error) {
       console.error(error);

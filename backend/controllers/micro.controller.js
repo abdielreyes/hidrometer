@@ -17,7 +17,7 @@ mqtt.on("message", async (topic, message) => {
       max: Math.max(...r),
       flag,
     };
-    console.log("Micro", Micro["sensor" + sensorId]);
+    // console.log("Micro", Micro["sensor" + sensorId]);
   } catch (error) {
     console.log(error);
   }

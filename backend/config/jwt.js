@@ -1,8 +1,11 @@
 import jwt from "jsonwebtoken";
 const JWT_SECRET = process.env.JWT_SECRET;
+import crypto from "crypto";
 export const generateAccessToken = (user) => {
   try {
-    return jwt.sign({ user }, JWT_SECRET, { expiresIn: "24h" });
+    let newUser = user[0];
+    console.log("newUser", newUser);
+    return jwt.sign({ user: newUser }, JWT_SECRET, { expiresIn: "24h" });
   } catch (error) {
     console.log("Error al generar el token:", error);
     return null;

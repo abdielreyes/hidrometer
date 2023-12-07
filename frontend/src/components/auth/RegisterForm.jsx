@@ -8,25 +8,55 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { BASE_URL } from "../utils/variables";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function LoginForm() {
   const [verified, setVerified] = useState(false);
+  const navigate = useNavigate();
   const { register, handleSubmit } = useForm();
-  const onSubmit = (formData) => {
+  const onSubmit = async (formData) => {
     console.log(BASE_URL);
     if (!verified) {
-      setVerified(true);
-      sendVerificationCode(formData.phone);
+      if (await checkPhone(formData.phone)) {
+        setVerified(true);
+        sendVerificationCode(formData.phone);
+      }
     } else {
       sendRegistration(formData);
     }
     console.log(formData);
   };
+  const checkPhone = async (phone) => {
+    try {
+      const response = await axios.post(
+        BASE_URL + "/api/auth/checkPhone",
+        {
+          phone: phone,
+        },
+        {
+          validateStatus: false,
+        }
+      );
+      const data = response.data;
+      if (response.status == 200) {
+        toast.error(data.message);
+        return false;
+      } else {
+        console.log(data);
+        return true;
+      }
+    } catch (error) {
+      console.error("Error", error);
+      return false;
+    }
+  };
+
   const sendVerificationCode = async (phone) => {
     try {
       console.log("Sending verification code to " + phone);
 
-      const response = await fetch(
+      const response = await axios.post(
         BASE_URL + "/api/auth/registration/sendVerify",
         {
           method: "POST",
@@ -37,32 +67,37 @@ export default function LoginForm() {
         }
       );
 
-      const data = await response.json();
-      console.log(data);
-      toast.success(data.message);
+      const data = await response.data;
+      if (response.status !== 200) {
+        toast.error(data.message);
+        return;
+      } else {
+        toast.success(data.message);
+      }
     } catch (error) {
       console.error(error);
     }
   };
   const sendRegistration = async (formData) => {
     try {
-      const response = await fetch(BASE_URL + "/api/auth/registration/verify", {
-        method: "POST",
-        body: JSON.stringify(formData),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axios.post(
+        BASE_URL + "/api/auth/registration/verify",
+        formData,
+        {
+          validateStatus: false,
+        }
+      );
 
-      const data = await response.json();
+      const data = await response.data;
       console.log(response);
       if (response.status !== 200) {
         toast.error(data.message);
         return;
       } else {
-        console.log(data);
+        console.log(data, response.status);
         toast.success(data.message);
         window.localStorage.setItem("token", data.token);
+        navigate("/");
       }
     } catch (error) {
       console.error(error);

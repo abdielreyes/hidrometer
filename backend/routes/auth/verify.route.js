@@ -4,8 +4,21 @@ import { client, TWILIO_SERVICE_SID } from "../../config/twilio.js";
 import User from "../../models/user.model.js";
 import { createUser, getUsers } from "../../controllers/user.controller.js";
 import { get } from "mongoose";
-const { generateAccessToken } = require("../../config/jwt.js");
-
+import { generateAccessToken } from "../../config/jwt.js";
+router.post("/checkPhone", async (req, res) => {
+  try {
+    const { phone } = req.body;
+    const users = await getUsers({ phone });
+    if (users.length > 0) {
+      res.status(200).json({ message: "El telefono ya se ha registrado" });
+    } else {
+      res.status(404).json({ message: "El usuario no existe" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error al obtener usuario" });
+  }
+});
 router.post("/registration/sendVerify", async (req, res) => {
   try {
     const { channel, phone } = req.body;
@@ -99,6 +112,7 @@ router.post("/login/verify", async (req, res) => {
         res.status(200).header("Authorization", accessToken).json({
           message: "Usuario autenticado",
           token: accessToken,
+          user,
         });
       }
     } else {

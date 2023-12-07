@@ -5,7 +5,6 @@ function Logout() {
     window.localStorage.removeItem("token");
   }, []);
 
-  window.localStorage.removeItem("token");
   return <Navigate to="/login" />;
 }
 
