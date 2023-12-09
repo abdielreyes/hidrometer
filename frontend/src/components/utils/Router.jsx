@@ -14,6 +14,7 @@ import ProtectedRoutes from "./ProtectedRoutes.jsx";
 import Logout from "../auth/Logout.jsx";
 import Dispatch from "./Dispatch.jsx";
 import HomePage from "../home/HomePage.jsx";
+import Profile from "../user/Profile.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -51,7 +52,11 @@ const router = createBrowserRouter([
     children: [
       {
         path: "",
-        element: <MainPage><Dashboard></Dashboard></MainPage>,
+        element: (
+          <MainPage>
+            <Dashboard></Dashboard>
+          </MainPage>
+        ),
       },
       {
         path: "history",
@@ -72,6 +77,14 @@ const router = createBrowserRouter([
         element: (
           <MainPage>
             <HomePage />
+          </MainPage>
+        ),
+      },
+      {
+        path: "profile",
+        element: (
+          <MainPage>
+            <Profile />
           </MainPage>
         ),
       },

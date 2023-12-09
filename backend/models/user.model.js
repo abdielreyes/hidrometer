@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  postalCode: {
+  postal_code: {
     type: String,
     required: true,
   },
@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
     unique: true,
     required: true,
   },
-  level: {
+  role: {
     type: String,
     enum: ["User", "Operator", "Admin"],
     default: "User",

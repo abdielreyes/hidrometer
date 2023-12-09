@@ -21,6 +21,15 @@ export const getUsers = async (params) => {
     return null;
   }
 };
+export const getUser = async (params) => {
+  try {
+    const users = await User.find(params);
+    return users[0];
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
 export const getPhones = async (params) => {
   try {
     const users = await User.find(params);
@@ -29,7 +38,7 @@ export const getPhones = async (params) => {
     console.error(error);
     return null;
   }
-}
+};
 // Controlador para obtener un usuario por ID
 export const getUserById = async (req, res) => {
   const userId = req.params.id;

@@ -11,10 +11,10 @@ const Dispatch = () => {
     const user = decodedToken.user;
     console.log(user);
 
-    if (user.level === "Admin") {
+    if (user.role === "Admin") {
       return <Navigate to="/admin" />;
     }
-    if (user.level === "User") {
+    if (user.role === "User") {
       return <Navigate to="/home" />;
     }
   }

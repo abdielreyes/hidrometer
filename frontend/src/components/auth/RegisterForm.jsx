@@ -14,13 +14,17 @@ import axios from "axios";
 export default function LoginForm() {
   const [verified, setVerified] = useState(false);
   const navigate = useNavigate();
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, getValues } = useForm();
   const onSubmit = async (formData) => {
-    console.log(BASE_URL);
     if (!verified) {
-      if (await checkPhone(formData.phone)) {
+      const phone = formData.phone;
+      const phoneRegistered = await checkPhone(phone);
+      console.log(phoneRegistered);
+      if (phoneRegistered) {
+        sendVerificationCode(phone);
         setVerified(true);
-        sendVerificationCode(formData.phone);
+      } else {
+        toast.error("Este número de teléfono ya está registrado");
       }
     } else {
       sendRegistration(formData);
@@ -29,25 +33,14 @@ export default function LoginForm() {
   };
   const checkPhone = async (phone) => {
     try {
-      const response = await axios.post(
-        BASE_URL + "/api/auth/checkPhone",
-        {
-          phone: phone,
-        },
-        {
-          validateStatus: false,
-        }
-      );
-      const data = response.data;
-      if (response.status == 200) {
-        toast.error(data.message);
-        return false;
-      } else {
-        console.log(data);
-        return true;
-      }
+      const response = await axios.post(BASE_URL + "/api/auth/checkPhone", {
+        phone: phone,
+      });
+      const data = await response.data;
+      console.log(data);
+      return true;
     } catch (error) {
-      console.error("Error", error);
+      toast.error(error.response.data.message);
       return false;
     }
   };
@@ -59,51 +52,38 @@ export default function LoginForm() {
       const response = await axios.post(
         BASE_URL + "/api/auth/registration/sendVerify",
         {
-          method: "POST",
-          body: JSON.stringify({ phone: phone, channel: "sms" }),
-          headers: {
-            "Content-Type": "application/json",
-          },
+          phone: phone,
+          channel: "sms",
         }
       );
 
-      const data = await response.data;
-      if (response.status !== 200) {
-        toast.error(data.message);
-        return;
-      } else {
-        toast.success(data.message);
-      }
+      const data = response.data;
+      toast.success(data.message);
     } catch (error) {
+      toast.error(error.response.data.message);
       console.error(error);
     }
   };
   const sendRegistration = async (formData) => {
+    console.log(formData);
     try {
       const response = await axios.post(
         BASE_URL + "/api/auth/registration/verify",
-        formData,
-        {
-          validateStatus: false,
-        }
+        formData
       );
 
       const data = await response.data;
-      console.log(response);
-      if (response.status !== 200) {
-        toast.error(data.message);
-        return;
-      } else {
-        console.log(data, response.status);
-        toast.success(data.message);
-        window.localStorage.setItem("token", data.token);
-        navigate("/");
-      }
+      toast.success(data.message);
+      window.localStorage.setItem("token", data.token);
+      navigate("/");
     } catch (error) {
+      toast.error(error.response.data.message);
       console.error(error);
     }
   };
-
+  const resendVerificationCode = () => {
+    sendVerificationCode(getValues().phone);
+  };
   return (
     <div>
       <div className="mx-auto max-w-lg text-center">
@@ -144,7 +124,7 @@ export default function LoginForm() {
 
           <div className="relative">
             <input
-              {...register("postalCode", { required: true, type: "number" })}
+              {...register("postal_code", { required: true, type: "number" })}
               className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
               placeholder="Código postal"
             />
@@ -190,6 +170,12 @@ export default function LoginForm() {
               <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
                 <FaPhoneVolume />
               </span>
+              <p className="text-sm px-1 py-1 text-gray-500">
+                ¿No llegó tu código de verificación? &nbsp;
+                <a onClick={resendVerificationCode} className="underline">
+                  Reenviar código
+                </a>
+              </p>
             </div>
           </div>
         ) : (

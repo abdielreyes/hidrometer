@@ -3,7 +3,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 import crypto from "crypto";
 export const generateAccessToken = (user) => {
   try {
-    let newUser = user[0];
+    let newUser = user;
     console.log("newUser", newUser);
     return jwt.sign({ user: newUser }, JWT_SECRET, { expiresIn: "24h" });
   } catch (error) {

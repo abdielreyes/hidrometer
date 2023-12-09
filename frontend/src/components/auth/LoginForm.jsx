@@ -24,33 +24,17 @@ export default function LoginForm() {
   };
   const checkPhone = async (phone) => {
     try {
-      const response = await axios.post(
-        BASE_URL + "/api/auth/checkPhone",
-        {
-          phone: phone,
-        },
-        {
-          validateStatus: false,
-        }
-      );
-      console.log(response);
-      const data = response.data;
-      if (response.status == 200) {
-        return true;
-      } else {
-        console.log("no existe", data);
-        toast.error(data.message);
-        return false;
-      }
+      axios.post(BASE_URL + "/api/auth/checkPhone", {
+        phone: phone,
+      });
+      return true;
     } catch (error) {
-      console.error("Error", error);
+      console.error(error.response.data.message);
       return false;
     }
   };
   const sendVerificationCode = async (phone) => {
     try {
-      console.log("Sending verification code to " + phone);
-
       const response = await axios.post(
         BASE_URL + "/api/auth/login/sendVerify",
         {
@@ -58,15 +42,11 @@ export default function LoginForm() {
           channel: "sms",
         }
       );
-      const data = await response.json();
-      if (response.status !== 200) {
-        toast.error(data.message);
-        return;
-      } else {
-        console.log(data);
-        toast.success(data.message);
-      }
+      const data = response.data;
+      console.log(data);
+      toast.success(data.message);
     } catch (error) {
+      toast.error(error.response.data.message);
       console.error(error);
     }
   };
@@ -90,6 +70,7 @@ export default function LoginForm() {
         navigate("/");
       }
     } catch (error) {
+      toast.error(error.response.data.message);
       console.error(error);
     }
   };

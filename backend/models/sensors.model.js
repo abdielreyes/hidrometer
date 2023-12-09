@@ -14,10 +14,10 @@ const userSchema = new mongoose.Schema({
     unique: true,
     required: true,
   },
-  level: {
+  role: {
     type: String,
-    enum: ["User", "Operator", "Admin"],
-    default: "User",
+    enum: ["user", "operator", "admin"],
+    default: "user",
   },
 });
 

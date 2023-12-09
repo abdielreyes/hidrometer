@@ -11,36 +11,36 @@ const Micro = {
     current: 0,
     min: 0,
     max: 0,
-    flag: 0
+    flag: 0,
   },
   sensor2: {
     avg: 0,
     current: 0,
     min: 0,
     max: 0,
-    flag: 0
+    flag: 0,
   },
   sensor3: {
     avg: 0,
     current: 0,
     min: 0,
     max: 0,
-    flag: 0
+    flag: 0,
   },
   total: {
     current_avg: 0,
     min_avg: 0,
     max_avg: 0,
     flag: 0,
-    alert_level: 0
+    alert_level: 0,
   },
   config: {
     LEVEL_ALERT_MAX,
     LEVEL_ALERT_MID,
     LEVEL_ALERT_MIN,
     alerted: false,
-    last_alert: null
-  }
+    last_alert: null,
+  },
 };
 mqtt.subscribe("hidrometer");
 mqtt.on("message", async (topic, message) => {
@@ -59,22 +59,38 @@ mqtt.on("message", async (topic, message) => {
     };
 
     Micro.total = {
-      current_avg: calculateAverage([Micro.sensor1.avg, Micro.sensor2.avg, Micro.sensor3.avg]),
-      min_avg: calculateAverage([Micro.sensor1.min, Micro.sensor2.min, Micro.sensor3.min]),
-      max_avg: calculateAverage([Micro.sensor1.max, Micro.sensor2.max, Micro.sensor3.max]),
-      flag: (Micro.sensor1.flag || Micro.sensor2.flag || Micro.sensor3.flag)
-    }
+      current_avg: calculateAverage([
+        Micro.sensor1.avg,
+        Micro.sensor2.avg,
+        Micro.sensor3.avg,
+      ]),
+      min_avg: calculateAverage([
+        Micro.sensor1.min,
+        Micro.sensor2.min,
+        Micro.sensor3.min,
+      ]),
+      max_avg: calculateAverage([
+        Micro.sensor1.max,
+        Micro.sensor2.max,
+        Micro.sensor3.max,
+      ]),
+      flag: Micro.sensor1.flag || Micro.sensor2.flag || Micro.sensor3.flag,
+    };
     if (Micro.total.flag || Micro.total.current_avg > LEVEL_ALERT_MAX) {
       Micro.total.alert_level = 2;
-      sendAlert(Micro.total.alert_level);
-    } else if (Micro.total.current_avg > LEVEL_ALERT_MID && Micro.total.current_avg < LEVEL_ALERT_MAX) {
+      // sendAlert(Micro.total.alert_level);
+    } else if (
+      Micro.total.current_avg > LEVEL_ALERT_MID &&
+      Micro.total.current_avg < LEVEL_ALERT_MAX
+    ) {
       Micro.total.alert_level = 1;
-      sendAlert(Micro.total.alert_level);
+      // sendAlert(Micro.total.alert_level);
     } else {
       clearAlert();
     }
 
     // console.log("Micro", Micro);
+    console.log("New measurement");
   } catch (error) {
     console.log(error);
   }

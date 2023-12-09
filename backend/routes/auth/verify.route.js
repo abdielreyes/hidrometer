@@ -1,17 +1,22 @@
 import express from "express";
 const router = express.Router();
 import { client, TWILIO_SERVICE_SID } from "../../config/twilio.js";
-import User from "../../models/user.model.js";
-import { createUser, getUsers } from "../../controllers/user.controller.js";
+import {
+  createUser,
+  getUser,
+  getUsers,
+} from "../../controllers/user.controller.js";
 import { generateAccessToken } from "../../config/jwt.js";
+
 router.post("/checkPhone", async (req, res) => {
   try {
     const { phone } = req.body;
     const users = await getUsers({ phone });
+    console.log(users);
     if (users.length > 0) {
-      res.status(200).json({ message: "El telefono ya se ha registrado" });
+      res.status(400).json({ message: "El teléfono ya se ha registrado" });
     } else {
-      res.status(404).json({ message: "El usuario no existe" });
+      res.status(200).json({ message: "El usuario no existe" });
     }
   } catch (error) {
     console.error(error);
@@ -21,7 +26,6 @@ router.post("/checkPhone", async (req, res) => {
 router.post("/registration/sendVerify", async (req, res) => {
   try {
     const { channel, phone } = req.body;
-
     const verification = await client.verify.v2
       .services(TWILIO_SERVICE_SID)
       .verifications.create({
@@ -31,6 +35,7 @@ router.post("/registration/sendVerify", async (req, res) => {
 
     res.status(200).json({ message: "Código enviado" });
   } catch (error) {
+    console.error(error);
     res
       .status(500)
       .json({ message: "Error al enviar el código de verificación" });
@@ -39,10 +44,10 @@ router.post("/registration/sendVerify", async (req, res) => {
 
 router.post("/registration/verify", async (req, res) => {
   try {
-    const { phone, code, name, postalCode } = req.body;
+    const { phone, code, name, postal_code } = req.body;
     const users = await getUsers({ phone });
     if (users.length > 0) {
-      res.status(400).json({ message: "El usuario ya existe" });
+      res.status(401).json({ message: "El usuario ya existe" });
     } else {
       const verificationCheck = await client.verify.v2
         .services(TWILIO_SERVICE_SID)
@@ -51,11 +56,11 @@ router.post("/registration/verify", async (req, res) => {
           code,
         });
       if (verificationCheck.status === "approved") {
-        const newUser = await createUser(req.body);
+        const newUser = await createUser({ phone, name, postal_code });
         if (!newUser) {
           res.status(500).json({ message: "Error al crear el usuario" });
         } else {
-          const accessToken = await generateAccessToken(newUser);
+          const accessToken = generateAccessToken(newUser);
           if (!accessToken) {
             res.status(500).json({ message: "Error al generar el token" });
           } else {
@@ -103,7 +108,7 @@ router.post("/login/verify", async (req, res) => {
         code,
       });
     if (verificationCheck.status === "approved") {
-      const user = await getUsers({ phone });
+      const user = await getUser({ phone });
       const accessToken = await generateAccessToken(user);
       if (!accessToken) {
         res.status(500).json({ message: "Error al generar el token" });
