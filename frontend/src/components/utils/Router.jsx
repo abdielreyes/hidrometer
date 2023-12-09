@@ -15,6 +15,7 @@ import Logout from "../auth/Logout.jsx";
 import Dispatch from "./Dispatch.jsx";
 import HomePage from "../home/HomePage.jsx";
 import Profile from "../user/Profile.jsx";
+import FeedbackPage from "../feedback/FeedbackPage.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -88,6 +89,14 @@ const router = createBrowserRouter([
           </MainPage>
         ),
       },
+      {
+        path: "feedback",
+        element: (
+          <MainPage>
+            <FeedbackPage />
+          </MainPage>
+        )
+      }
     ],
   },
   {

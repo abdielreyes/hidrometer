@@ -23,8 +23,6 @@ export default function LoginForm() {
       if (phoneRegistered) {
         sendVerificationCode(phone);
         setVerified(true);
-      } else {
-        toast.error("Este número de teléfono ya está registrado");
       }
     } else {
       sendRegistration(formData);

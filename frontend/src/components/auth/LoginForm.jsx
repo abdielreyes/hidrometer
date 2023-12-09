@@ -12,10 +12,13 @@ export default function LoginForm() {
   const onSubmit = async (formData) => {
     console.log(BASE_URL);
     if (!verified) {
-      if (await checkPhone(formData.phone)) {
+      const isRegistered = await checkPhone(formData.phone);
+      console.log(isRegistered);
+      if ( isRegistered ) {
         console.log("Phone exists");
-        setVerified(true);
-        sendVerificationCode(formData.phone);
+               sendVerificationCode(formData.phone);
+      }else{
+        toast.error("El número de teléfono no existe");
       }
     } else {
       sendLogin(formData);
@@ -24,9 +27,11 @@ export default function LoginForm() {
   };
   const checkPhone = async (phone) => {
     try {
-      axios.post(BASE_URL + "/api/auth/checkPhone", {
+      const response = axios.post(BASE_URL + "/api/auth/checkPhone", {
         phone: phone,
       });
+      const data = await response.data;
+      console.log(data);
       return true;
     } catch (error) {
       console.error(error.response.data.message);
@@ -44,7 +49,9 @@ export default function LoginForm() {
       );
       const data = response.data;
       console.log(data);
-      toast.success(data.message);
+      toast.success(data.message); 
+      setVerified(true);
+
     } catch (error) {
       toast.error(error.response.data.message);
       console.error(error);

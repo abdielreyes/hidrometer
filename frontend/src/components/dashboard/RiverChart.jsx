@@ -25,9 +25,9 @@ const LineCharts = ({ sensorData }) => {
         ...prevData,
         {
           name: new Date().toLocaleTimeString(),
-          uv: sensorData.current,
+          uv: sensorData.current_avg,
           pv: 4300,
-          amt: 2100,
+
         },
       ];
       if (newData.length > max) {

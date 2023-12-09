@@ -6,27 +6,27 @@ const LEVEL_ALERT_MAX = 10;
 const LEVEL_ALERT_MID = 5;
 const LEVEL_ALERT_MIN = 0;
 const Micro = {
-  sensor1: {
+  sensors: [{
     avg: 0,
     current: 0,
     min: 0,
     max: 0,
     flag: 0,
   },
-  sensor2: {
+  {
     avg: 0,
     current: 0,
     min: 0,
     max: 0,
     flag: 0,
   },
-  sensor3: {
+  {
     avg: 0,
     current: 0,
     min: 0,
     max: 0,
     flag: 0,
-  },
+  }],
   total: {
     current_avg: 0,
     min_avg: 0,
@@ -50,33 +50,26 @@ mqtt.on("message", async (topic, message) => {
     redis.lPush("sensor" + sensorId, String(data));
     redis.lTrim("sensor" + sensorId, 0, MAX_SIZE);
     const r = await redis.lRange("sensor" + sensorId, 0, MAX_SIZE);
-    Micro["sensor" + sensorId] = {
+    Micro.sensors[sensorId] = {
       avg: calculateAverage(r),
       current: data,
       min: Math.min(...r),
       max: Math.max(...r),
       flag,
     };
+    const sensorCount = Micro.sensors.length;
+    const totalAvg = Micro.sensors.reduce((sum, sensor) => sum + sensor.avg, 0) / sensorCount;
+    const currentAvg = Micro.sensors.reduce((sum, sensor) => sum + sensor.current, 0) / sensorCount;
+    const minAvg = Micro.sensors.reduce((sum, sensor) => sum + sensor.min, 0) / sensorCount;
+    const maxAvg = Micro.sensors.reduce((sum, sensor) => sum + sensor.max, 0) / sensorCount;
 
     Micro.total = {
-      current_avg: calculateAverage([
-        Micro.sensor1.avg,
-        Micro.sensor2.avg,
-        Micro.sensor3.avg,
-      ]),
-      min_avg: calculateAverage([
-        Micro.sensor1.min,
-        Micro.sensor2.min,
-        Micro.sensor3.min,
-      ]),
-      max_avg: calculateAverage([
-        Micro.sensor1.max,
-        Micro.sensor2.max,
-        Micro.sensor3.max,
-      ]),
-      flag: Micro.sensor1.flag || Micro.sensor2.flag || Micro.sensor3.flag,
+      current_avg: currentAvg,
+      min_avg: minAvg,
+      max_avg: maxAvg,
+      flag: Micro.sensors.some((sensor) => sensor.flag !== 0),
     };
-    if (Micro.total.flag || Micro.total.current_avg > LEVEL_ALERT_MAX) {
+    if (Micro.total.flag && Micro.total.current_avg > LEVEL_ALERT_MAX) {
       Micro.total.alert_level = 2;
       // sendAlert(Micro.total.alert_level);
     } else if (

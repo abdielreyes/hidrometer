@@ -1,10 +1,12 @@
 import Navbar from "../../components/ui/Navbar";
 const HomePage = ({ children }) => {
   return (
-    <div>
-      <Navbar />
-      {children}
-    </div>
+    <div className="">
+      <Navbar >
+        {children}
+      </Navbar>
+
+    </div >
   );
 };
 
