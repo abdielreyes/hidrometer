@@ -65,7 +65,11 @@ const router = createBrowserRouter([
       },
       {
         path: "users",
-        element: <UsersPage />,
+        element: (
+          <MainPage>
+            <UsersPage />
+          </MainPage>
+        ),
       },
     ],
   },
@@ -95,8 +99,8 @@ const router = createBrowserRouter([
           <MainPage>
             <FeedbackPage />
           </MainPage>
-        )
-      }
+        ),
+      },
     ],
   },
   {
