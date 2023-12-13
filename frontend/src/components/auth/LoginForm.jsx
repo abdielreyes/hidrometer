@@ -14,10 +14,10 @@ export default function LoginForm() {
     if (!verified) {
       const isRegistered = await checkPhone(formData.phone);
       console.log(isRegistered);
-      if ( isRegistered ) {
+      if (isRegistered) {
         console.log("Phone exists");
-               sendVerificationCode(formData.phone);
-      }else{
+        sendVerificationCode(formData.phone);
+      } else {
         toast.error("El número de teléfono no existe");
       }
     } else {
@@ -40,6 +40,7 @@ export default function LoginForm() {
   };
   const sendVerificationCode = async (phone) => {
     try {
+      phone = "+52" + phone;
       const response = await axios.post(
         BASE_URL + "/api/auth/login/sendVerify",
         {
@@ -49,9 +50,8 @@ export default function LoginForm() {
       );
       const data = response.data;
       console.log(data);
-      toast.success(data.message); 
+      toast.success(data.message);
       setVerified(true);
-
     } catch (error) {
       toast.error(error.response.data.message);
       console.error(error);
@@ -60,6 +60,7 @@ export default function LoginForm() {
 
   const sendLogin = async (formData) => {
     try {
+      formData.phone = "+52" + formData.phone;
       const response = await axios.post(BASE_URL + "/api/auth/login/verify", {
         phone: formData.phone,
         code: formData.code,
@@ -101,7 +102,12 @@ export default function LoginForm() {
 
           <div className="relative">
             <input
-              {...register("phone", { required: true, type: "tel" })}
+              {...register("phone", {
+                required: true,
+                type: "number",
+                maxLength: 10,
+                minLength: 10,
+              })}
               className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
               placeholder="Número de teléfono"
             />

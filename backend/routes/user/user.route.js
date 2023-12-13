@@ -19,7 +19,7 @@ router.get("/", getUsers);
 router.get("/:id", getUserById);
 
 // Ruta para actualizar un usuario por ID
-router.put("/:id", updateUserById);
+router.put("/", updateUserById);
 
 // Ruta para eliminar un usuario por ID
 router.delete("/:id", deleteUserById);

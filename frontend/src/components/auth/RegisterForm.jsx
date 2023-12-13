@@ -45,6 +45,7 @@ export default function LoginForm() {
 
   const sendVerificationCode = async (phone) => {
     try {
+      phone = "+52" + phone;
       console.log("Sending verification code to " + phone);
 
       const response = await axios.post(
@@ -63,7 +64,7 @@ export default function LoginForm() {
     }
   };
   const sendRegistration = async (formData) => {
-    console.log(formData);
+    formData.phone = "+52" + formData.phone;
     try {
       const response = await axios.post(
         BASE_URL + "/api/auth/registration/verify",
@@ -72,7 +73,7 @@ export default function LoginForm() {
 
       const data = await response.data;
       toast.success(data.message);
-      window.localStorage.setItem("token", data.token);
+      localStorage.setItem("token", data.token);
       navigate("/");
     } catch (error) {
       toast.error(error.response.data.message);
@@ -139,7 +140,12 @@ export default function LoginForm() {
 
           <div className="relative">
             <input
-              {...register("phone", { required: true, type: "tel" })}
+              {...register("phone", {
+                required: true,
+                type: "number",
+                maxLength: 10,
+                minLength: 10,
+              })}
               className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
               placeholder="Número de teléfono"
             />

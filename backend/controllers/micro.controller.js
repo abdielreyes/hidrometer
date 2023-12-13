@@ -1,32 +1,12 @@
 import { redis } from "../config/database.js";
 import mqtt from "../config/mqtt.js";
-import { clearAlert, sendAlert } from "./alert.controller.js";
-const MAX_SIZE = 100;
-const LEVEL_ALERT_MAX = 10;
-const LEVEL_ALERT_MID = 5;
-const LEVEL_ALERT_MIN = 0;
-const Micro = {
-  sensors: [{
-    avg: 0,
-    current: 0,
-    min: 0,
-    max: 0,
-    flag: 0,
-  },
-  {
-    avg: 0,
-    current: 0,
-    min: 0,
-    max: 0,
-    flag: 0,
-  },
-  {
-    avg: 0,
-    current: 0,
-    min: 0,
-    max: 0,
-    flag: 0,
-  }],
+import { sendAlert } from "./alert.controller.js";
+const MAX_SIZE = 120;
+const LEVEL_ALERT_MAX = 5;
+const LEVEL_ALERT_MID = 10;
+const LEVEL_ALERT_MIN = 15;
+const initialMicro = {
+  sensors: [],
   total: {
     current_avg: 0,
     min_avg: 0,
@@ -40,9 +20,20 @@ const Micro = {
     LEVEL_ALERT_MIN,
     alerted: false,
     last_alert: null,
+    UNIT: "cm",
   },
 };
+let Micro = initialMicro;
 mqtt.subscribe("hidrometer");
+setInterval(() => {
+  Micro.sensors.forEach((sensor) => {
+    redis.lTrim("sensor" + sensor.sensorId, 0, MAX_SIZE);
+  });
+}, 1000);
+mqtt.on("disconnect", () => {
+  Micro = initialMicro;
+  console.log("Sensor disconnected");
+});
 mqtt.on("message", async (topic, message) => {
   try {
     message = JSON.parse(message.toString());
@@ -50,6 +41,7 @@ mqtt.on("message", async (topic, message) => {
     redis.lPush("sensor" + sensorId, String(data));
     redis.lTrim("sensor" + sensorId, 0, MAX_SIZE);
     const r = await redis.lRange("sensor" + sensorId, 0, MAX_SIZE);
+    console.log(r);
     Micro.sensors[sensorId] = {
       avg: calculateAverage(r),
       current: data,
@@ -58,10 +50,15 @@ mqtt.on("message", async (topic, message) => {
       flag,
     };
     const sensorCount = Micro.sensors.length;
-    const totalAvg = Micro.sensors.reduce((sum, sensor) => sum + sensor.avg, 0) / sensorCount;
-    const currentAvg = Micro.sensors.reduce((sum, sensor) => sum + sensor.current, 0) / sensorCount;
-    const minAvg = Micro.sensors.reduce((sum, sensor) => sum + sensor.min, 0) / sensorCount;
-    const maxAvg = Micro.sensors.reduce((sum, sensor) => sum + sensor.max, 0) / sensorCount;
+    const totalAvg =
+      Micro.sensors.reduce((sum, sensor) => sum + sensor.avg, 0) / sensorCount;
+    const currentAvg =
+      Micro.sensors.reduce((sum, sensor) => sum + sensor.current, 0) /
+      sensorCount;
+    const minAvg =
+      Micro.sensors.reduce((sum, sensor) => sum + sensor.min, 0) / sensorCount;
+    const maxAvg =
+      Micro.sensors.reduce((sum, sensor) => sum + sensor.max, 0) / sensorCount;
 
     Micro.total = {
       current_avg: currentAvg,
@@ -69,21 +66,25 @@ mqtt.on("message", async (topic, message) => {
       max_avg: maxAvg,
       flag: Micro.sensors.some((sensor) => sensor.flag !== 0),
     };
-    if (Micro.total.flag && Micro.total.current_avg > LEVEL_ALERT_MAX) {
+    if (Micro.total.flag && Micro.total.current_avg <= LEVEL_ALERT_MAX) {
       Micro.total.alert_level = 2;
       // sendAlert(Micro.total.alert_level);
     } else if (
-      Micro.total.current_avg > LEVEL_ALERT_MID &&
-      Micro.total.current_avg < LEVEL_ALERT_MAX
+      Micro.total.current_avg <= LEVEL_ALERT_MID &&
+      Micro.total.current_avg > LEVEL_ALERT_MAX
     ) {
       Micro.total.alert_level = 1;
       // sendAlert(Micro.total.alert_level);
-    } else {
-      clearAlert();
+    } else if (
+      Micro.total.current_avg <= LEVEL_ALERT_MIN &&
+      Micro.total.current_avg > LEVEL_ALERT_MID
+    ) {
+      Micro.total.alert_level = 0;
+      Micro.config.alerted = false;
     }
 
-    // console.log("Micro", Micro);
-    console.log("New measurement");
+    console.log("Micro", Micro);
+    // console.log("New measurement");
   } catch (error) {
     console.log(error);
   }

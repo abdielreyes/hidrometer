@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import LineChart from "./RiverChart";
 import { BASE_URL } from "../utils/variables";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -10,9 +9,10 @@ function Dashboard() {
     min_avg: 0,
     current_avg: 0,
     max_avg: 0,
-    flag: false
+    flag: false,
   });
   const [sensors, setSensors] = useState([]);
+  const [config, setConfig] = useState({});
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
@@ -20,29 +20,27 @@ function Dashboard() {
         console.log(res.data);
         setAvgData(res.data.total);
         setSensors(res.data.sensors);
+        setConfig(res.data.config);
       } catch (error) {
         toast.error(error.response.data.message);
-        console.error(error)
+        console.error(error);
       }
     }, 2000);
     return () => clearInterval(interval);
   });
-  useEffect(() => { }, []);
+  useEffect(() => {}, []);
   return (
     <div className="px-8">
-      <h2 className="text-4xl mb-8 font-bold mt-8 ">Dashboard</h2>
+      <h2 className="text-4xl mb-8 font-bold mt-8 ">Panel de Monitoreo</h2>
       <InfoAvg data={avgData} />
-      {
-        sensors.map((sensor, index) => {
-          return <div>
-            sensor {index}
-
-            <InfoSensor key={index} data={sensor} />
-
+      {sensors.map((sensor, index) => {
+        return (
+          <div key={index}>
+            <div className="text-3xl font-bold ">Sensor {index}</div>
+            <InfoSensor key={index} data={sensor} config={config} />
           </div>
-        })
-      }
-
+        );
+      })}
     </div>
   );
 }

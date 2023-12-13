@@ -7,6 +7,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import randomColor from "randomcolor";
 const dataPre = [
   {
     name: new Date().toLocaleTimeString(),
@@ -18,16 +19,14 @@ const dataPre = [
 const max = 5;
 const LineCharts = ({ sensorData }) => {
   const [data, setData] = useState(dataPre);
-
+  const [color] = useState(randomColor({ luminosity: "dark" }));
   useEffect(() => {
     setData((prevData) => {
       const newData = [
         ...prevData,
         {
           name: new Date().toLocaleTimeString(),
-          uv: sensorData.current_avg,
-          pv: 4300,
-
+          uv: sensorData.current_avg || sensorData.current,
         },
       ];
       if (newData.length > max) {
@@ -42,7 +41,7 @@ const LineCharts = ({ sensorData }) => {
   return (
     <ResponsiveContainer width="100%" height="100%">
       <LineChart data={data} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-        <Line type="monotone" dataKey="uv" stroke="#8884d8" />
+        <Line type="monotone" dataKey="uv" stroke={color} />
         <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
         <XAxis dataKey="name" />
         <YAxis />

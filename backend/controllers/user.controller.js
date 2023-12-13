@@ -56,12 +56,13 @@ export const getUserById = async (req, res) => {
 
 // Controlador para actualizar un usuario por ID
 export const updateUserById = async (req, res) => {
-  const userId = req.params.id;
-
+  const userId = req.body.id;
+  console.log(req.body);
   try {
     const updatedUser = await User.findByIdAndUpdate(userId, req.body, {
       new: true,
     });
+    console.log(updatedUser);
     if (!updatedUser) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
@@ -74,7 +75,7 @@ export const updateUserById = async (req, res) => {
 // Controlador para eliminar un usuario por ID
 export const deleteUserById = async (req, res) => {
   const userId = req.params.id;
-
+  console.log(req.params);
   try {
     const deletedUser = await User.findByIdAndDelete(userId);
     if (!deletedUser) {
