@@ -15,11 +15,11 @@ function ModalConfirm({ confirm, data }) {
           <p className="py-4">{data.message}</p>
           <div className="modal-action">
             <form method="dialog">
-              <button className="btn btn-error text-white" onClick={confirm}>
+              <button className="btn btn-success text-white" onClick={confirm}>
                 {data.button_accept}
               </button>
             </form>
-            <button className="btn btn-success text-white" onClick={closeModal}>
+            <button className="btn btn-error text-white" onClick={closeModal}>
               {data.button_decline}
             </button>
           </div>

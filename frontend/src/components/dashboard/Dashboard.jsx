@@ -28,9 +28,9 @@ function Dashboard() {
     }, 2000);
     return () => clearInterval(interval);
   });
-  useEffect(() => { }, []);
+  useEffect(() => {}, []);
   return (
-    <div className="px-8">
+    <div className="px-10 lg:px-32">
       <h2 className="text-4xl mb-8 font-bold mt-8 ">Panel de Monitoreo</h2>
       <InfoAvg data={avgData} config={config} />
       {sensors.map((sensor, index) => {

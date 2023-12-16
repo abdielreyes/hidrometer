@@ -1,11 +1,18 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { BASE_URL } from "../utils/variables";
+import moment from "moment";
+import { FaPencil } from "react-icons/fa6";
+import { FaTrashAlt } from "react-icons/fa";
+import ModalConfirm from "../ui/ModalConfirm";
+import { toast } from "react-toastify";
+import ModalEdit from "../ui/ModalEdit";
 function Users() {
   const [users, setUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
-
+  const [totalPages, setTotalPages] = useState(1);
+  const [selectedId, setSelectedId] = useState(null);
+  const [refresh, setRefresh] = useState(false);
   useEffect(() => {
     // Cambia la URL según tu configuración del backend y la estructura de la API
     const fetchUsers = async () => {
@@ -20,6 +27,8 @@ function Users() {
         );
         setUsers(response.data.users);
         setTotalPages(response.data.totalPages);
+        setCurrentPage(response.data.currentPage);
+
         // Ajusta según la respuesta de tu backend
       } catch (error) {
         console.error("Error al obtener los usuarios:", error);
@@ -27,7 +36,7 @@ function Users() {
     };
 
     fetchUsers();
-  }, [currentPage]);
+  }, [currentPage, refresh]);
 
   // Funciones para manejar el cambio de página
   const goToNextPage = () => {
@@ -37,12 +46,37 @@ function Users() {
   const goToPreviousPage = () => {
     setCurrentPage(currentPage - 1);
   };
+  const handleEdit = (id) => (e) => {
+    e.preventDefault();
+    setSelectedId(id);
+    document.getElementById("modal_edit").showModal();
+  };
+  const deleteAccount = async () => {
+    console.log(selectedId);
+    try {
+      const response = await axios.delete(
+        `${BASE_URL}/api/user/${selectedId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+          },
+        }
+      );
+      console.log(response);
+      toast.success(response.data.message);
+      setRefresh(!refresh);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div>
       {/* ... Resto del componente ... */}
-      <div className="rounded-lg  border-gray-200 py-8 px-5 ">
-        <h2 className="text-4xl mb-8 font-bold mt-8 ">Usuarios</h2>
+      <div className="rounded-lg  border-gray-200 py-8 px-10  lg:px-32 ">
+        <h2 className="text-4xl mb-8 font-bold mt-8 ">
+          Administración de Usuarios
+        </h2>
         <div className="overflow-x-auto rounded-t-lg ">
           <table className="min-w-full divide-y-2 divide-gray-200 bg-white text-sm">
             <thead className="ltr:text-left rtl:text-right center">
@@ -58,6 +92,10 @@ function Users() {
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
                   Número de teléfono
+                </th>
+
+                <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
+                  Rol
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
                   Creado el
@@ -75,10 +113,25 @@ function Users() {
                   <td>{user.name}</td>
                   <td>{user.postal_code}</td>
                   <td>{user.phone}</td>
-                  <td>{user.createdAt}</td>
-                  <td className="flex gap-2">
-                    <button className="btn btn-primary rounded">Editar</button>
-                    <button className="btn btn-error rounded">Eliminar</button>
+                  <td>{user.role}</td>
+                  <td>{moment(user.created_at).format("DD / MMM / YYYY")}</td>
+                  <td className="flex  ">
+                    <button
+                      className="flex-auto "
+                      onClick={handleEdit(user._id)}
+                    >
+                      <FaPencil className="hover:bg-slate-300 m-1 p-2 text-3xl rounded text-black bg-slate-100" />
+                    </button>
+                    <button
+                      className="flex-auto"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setSelectedId(user._id);
+                        document.getElementById("modal_confirm").showModal();
+                      }}
+                    >
+                      <FaTrashAlt className="hover:bg-slate-300 m-1 p-2 text-3xl rounded text-black bg-slate-100" />
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -96,9 +149,7 @@ function Users() {
                     >
                       «
                     </button>
-                    <button className="btn rounded-sm">
-                      Página {currentPage}
-                    </button>
+                    <p>Página {currentPage}</p>
                     <button
                       className="btn rounded-sm"
                       onClick={goToNextPage}
@@ -112,7 +163,24 @@ function Users() {
             </tfoot>
           </table>
         </div>
-      </div>
+      </div>{" "}
+      <ModalConfirm
+        confirm={deleteAccount}
+        data={{
+          title: "¿Estás seguro de borrar la cuenta?",
+          message: "Esta acción no se puede deshacer",
+          button_accept: "Borrar Cuenta",
+          button_decline: "Cancelar",
+        }}
+      />
+      <ModalEdit
+        data={{
+          title: "Editar Usuario",
+          user_id: selectedId,
+          button_accept: "Guardar",
+          button_decline: "Cancelar",
+        }}
+      />
     </div>
   );
 }

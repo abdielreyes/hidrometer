@@ -1,6 +1,10 @@
 import { getPhones } from "./user.controller.js";
 import Micro from "./micro.controller.js";
-import { client, TWILIO_US_PHONE_NUMBER } from "../config/twilio.js";
+import {
+  client,
+  TWILIO_US_PHONE_NUMBER,
+  TWILIO_MESSAGING_SERVICE_SID,
+} from "../config/twilio.js";
 const TIME_RELEASE = 1;
 const ALERT_MESSAGE_2 = "Atención, el nivel de agua es muy alto";
 const ALERT_MESSAGE_1 = "Atención, el nivel de agua es alto";
@@ -38,7 +42,7 @@ function timeDiff(previousDate, currentDate) {
 function sendSMS(to, body) {
   try {
     client.messages
-      .create({ from: TWILIO_US_PHONE_NUMBER, to, body })
+      .create({ from: TWILIO_MESSAGING_SERVICE_SID, to, body })
       .then((message) => {
         console.log(`SMS message sent to ${to}. Message SID: ${message.sid}`);
       })

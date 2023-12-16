@@ -41,36 +41,23 @@ export const getPhones = async (params) => {
 };
 export const getUsersPagination = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1; // Obtiene la página de la query, por defecto es 1
-    const limit = parseInt(req.query.limit) || 10; // Límite de usuarios por página, por defecto 10
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
 
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;
+    const options = {
+      page,
+      limit,
+    };
 
-    const results = {};
+    const result = await User.paginate({}, options);
 
-    if (endIndex < (await User.countDocuments().exec())) {
-      results.next = {
-        page: page + 1,
-        limit: limit,
-      };
-    }
-
-    if (startIndex > 0) {
-      results.previous = {
-        page: page - 1,
-        limit: limit,
-      };
-    }
-
-    // Encuentra los usuarios y los limita
-    results.users = await User.find().limit(limit).skip(startIndex).exec();
-
-    // Puedes agregar más lógica aquí si necesitas, como contar el total de documentos, etc.
-
-    res.json(results);
+    res.status(200).json({
+      users: result.docs,
+      currentPage: result.page,
+      totalPages: result.totalPages,
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ error: "Error al obtener usuarios." });
   }
 };
 // Controlador para obtener un usuario por ID

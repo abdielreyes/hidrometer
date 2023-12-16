@@ -61,7 +61,12 @@ const router = createBrowserRouter([
       },
       {
         path: "history",
-        element: <HistoryPage />,
+        element: (
+          <MainPage>
+            {" "}
+            <HistoryPage />{" "}
+          </MainPage>
+        ),
       },
       {
         path: "users",

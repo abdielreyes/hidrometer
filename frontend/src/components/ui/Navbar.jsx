@@ -5,6 +5,9 @@ import { FaGear } from "react-icons/fa6";
 import { RiLogoutBoxRLine } from "react-icons/ri";
 import { IoPersonCircleOutline } from "react-icons/io5";
 import { MdOutlineFeedback } from "react-icons/md";
+import { FaHome } from "react-icons/fa";
+import { FaBell } from "react-icons/fa";
+import { FaUsersCog } from "react-icons/fa";
 
 function Navbar({ children }) {
   const [user, setUser] = useState({});
@@ -51,11 +54,26 @@ function Navbar({ children }) {
                   </a>
                 </li>
                 <li>
-                  <a href="/admin/history"></a>
+                  <a href="/admin/history">
+                    <FaBell />
+                    Historial de alertas
+                  </a>
+                </li>
+                <li>
+                  <a href="/admin/users">
+                    <FaUsersCog />
+                    Administración de usuarios
+                  </a>
                 </li>
               </>
             ) : user.role === "User" ? (
               <>
+                <li>
+                  <a href="/home">
+                    <FaHome />
+                    Inicio
+                  </a>
+                </li>
                 <li>
                   <a href="/home/feedback">
                     <MdOutlineFeedback />

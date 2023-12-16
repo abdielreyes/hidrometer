@@ -36,19 +36,38 @@ mqtt.on("disconnect", () => {
 });
 mqtt.on("message", async (topic, message) => {
   try {
+    console.log(message.toString());
     message = JSON.parse(message.toString());
     const { sensorId, data, flag } = message;
     redis.lPush("sensor" + sensorId, String(data));
     redis.lTrim("sensor" + sensorId, 0, MAX_SIZE);
     const r = await redis.lRange("sensor" + sensorId, 0, MAX_SIZE);
-    console.log(r);
-    Micro.sensors[sensorId] = {
-      avg: calculateAverage(r),
-      current: data,
-      min: Math.min(...r),
-      max: Math.max(...r),
-      flag,
-    };
+
+    const existingSensorIndex = Micro.sensors.findIndex(
+      (sensor) => sensor.sensorId === sensorId
+    );
+
+    if (existingSensorIndex !== -1) {
+      // Si el sensor con el mismo sensorId existe, actualiza sus propiedades
+      Micro.sensors[existingSensorIndex] = {
+        ...Micro.sensors[existingSensorIndex],
+        avg: calculateAverage(r),
+        current: data,
+        min: Math.min(...r),
+        max: Math.max(...r),
+        flag,
+      };
+    } else {
+      // Si no existe, crea un nuevo objeto y agrégalo al array
+      Micro.sensors.push({
+        sensorId,
+        avg: calculateAverage(r),
+        current: data,
+        min: Math.min(...r),
+        max: Math.max(...r),
+        flag,
+      });
+    }
     // Micro.sensors = Micro.sensors.filter(item => item !== undefined)
     const sensorCount = Micro.sensors.length;
     const totalAvg =
@@ -76,10 +95,7 @@ mqtt.on("message", async (topic, message) => {
     ) {
       Micro.total.alert_level = 1;
       // sendAlert(Micro.total.alert_level);
-    } else if (
-      Micro.total.current_avg <= LEVEL_ALERT_MIN &&
-      Micro.total.current_avg > LEVEL_ALERT_MID
-    ) {
+    } else {
       Micro.total.alert_level = 0;
       Micro.config.alerted = false;
     }
