@@ -2,9 +2,9 @@ import { redis } from "../config/database.js";
 import mqtt from "../config/mqtt.js";
 import { sendAlert } from "./alert.controller.js";
 const MAX_SIZE = 120;
-const LEVEL_ALERT_MAX = 5;
-const LEVEL_ALERT_MID = 10;
-const LEVEL_ALERT_MIN = 15;
+const LEVEL_ALERT_MAX = 2;
+const LEVEL_ALERT_MID = 5;
+const LEVEL_ALERT_MIN = 10;
 const initialMicro = {
   sensors: [],
   total: {
@@ -49,6 +49,7 @@ mqtt.on("message", async (topic, message) => {
       max: Math.max(...r),
       flag,
     };
+    // Micro.sensors = Micro.sensors.filter(item => item !== undefined)
     const sensorCount = Micro.sensors.length;
     const totalAvg =
       Micro.sensors.reduce((sum, sensor) => sum + sensor.avg, 0) / sensorCount;

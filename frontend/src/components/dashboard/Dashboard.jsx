@@ -28,11 +28,11 @@ function Dashboard() {
     }, 2000);
     return () => clearInterval(interval);
   });
-  useEffect(() => {}, []);
+  useEffect(() => { }, []);
   return (
     <div className="px-8">
       <h2 className="text-4xl mb-8 font-bold mt-8 ">Panel de Monitoreo</h2>
-      <InfoAvg data={avgData} />
+      <InfoAvg data={avgData} config={config} />
       {sensors.map((sensor, index) => {
         return (
           <div key={index}>

@@ -1,6 +1,13 @@
 import React from 'react'
 import LineChart from './RiverChart'
-function InfoAvg({ data }) {
+function InfoAvg({ data, config }) {
+    const fixNumber = (num) => {
+        if (fixNumber) {
+            return num.toFixed(2)
+
+        }
+        return 0
+    }
     return (
         <div>
             <div className="">
@@ -10,7 +17,7 @@ function InfoAvg({ data }) {
                     </dt>
 
                     <dd className="text-4xl font-extrabold text-blue-600 md:text-5xl">
-                        {data.current_avg} m
+                        {fixNumber(data.current_avg)} {config.UNIT}
                     </dd>
                 </div>
                 <div className="grid grid-cols-1 gap-4 mb-8">
@@ -26,7 +33,7 @@ function InfoAvg({ data }) {
                             </dt>
 
                             <dd className="text-4xl font-extrabold text-blue-600 md:text-5xl">
-                                {data.min_avg} m
+                                {fixNumber(data.min_avg)} {config.UNIT}
                             </dd>
                         </div>
 
@@ -36,7 +43,7 @@ function InfoAvg({ data }) {
                             </dt>
 
                             <dd className="text-4xl font-extrabold text-blue-600 md:text-5xl">
-                                {data.current_avg} m
+                                {fixNumber(data.current_avg)} {config.UNIT}
                             </dd>
                         </div>
 
@@ -46,7 +53,7 @@ function InfoAvg({ data }) {
                             </dt>
 
                             <dd className="text-4xl font-extrabold text-blue-600 md:text-5xl">
-                                {data.max_avg} m
+                                {data.max_avg} {config.UNIT}
                             </dd>
                         </div>
                     </dl>
