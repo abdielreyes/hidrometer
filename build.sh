@@ -1,7 +1,7 @@
 #! /bin/bash
 
 cd frontend
-vite build
+vite build -d
 cd ../
 sudo mkdir -p /var/www/hidrometer/html
 
