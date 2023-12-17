@@ -30,6 +30,7 @@ export default function LoginForm() {
     console.log(formData);
   };
   const checkPhone = async (phone) => {
+    phone = "+52" + phone;
     try {
       const response = await axios.post(BASE_URL + "/api/auth/checkPhone", {
         phone: phone,
