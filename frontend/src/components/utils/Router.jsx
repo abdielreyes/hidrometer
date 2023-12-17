@@ -16,6 +16,7 @@ import Dispatch from "./Dispatch.jsx";
 import HomePage from "../home/HomePage.jsx";
 import Profile from "../user/Profile.jsx";
 import FeedbackPage from "../feedback/FeedbackPage.jsx";
+import HistoryFeedback from "../feedback/HistoryFeedback.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -65,6 +66,14 @@ const router = createBrowserRouter([
           <MainPage>
             {" "}
             <HistoryPage />{" "}
+          </MainPage>
+        ),
+      },
+      {
+        path: "feedback",
+        element: (
+          <MainPage>
+            <HistoryFeedback />
           </MainPage>
         ),
       },

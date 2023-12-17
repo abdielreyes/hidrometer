@@ -2,44 +2,38 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { BASE_URL } from "../utils/variables";
 import moment from "moment";
-
-function HistoryAlerts() {
-  const [alerts, setAlerts] = useState([]);
+function HistoryFeedback() {
+  const [feedbacks, setFeedbacks] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [perPage] = useState(10); // Ajusta la cantidad de elementos por página según tus necesidades
+  const [perPage] = useState(10); // Cambia esto para ajustar la cantidad de elementos por página
   const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
-    const getAlerts = async () => {
+    const getFeedbacks = async () => {
       try {
         const response = await axios.get(
-          `${BASE_URL}/api/alert/?page=${currentPage}&limit=${perPage}`
+          `${BASE_URL}/api/feedback?page=${currentPage}&limit=${perPage}`
         );
-        setAlerts(response.data.alerts);
+        setFeedbacks(response.data.feedbacks);
         setCurrentPage(response.data.currentPage);
         setTotalPages(response.data.totalPages);
         console.log(response.data);
       } catch (error) {
-        console.error("Error al obtener alertas", error);
+        console.error("Error al obtener comentarios", error);
       }
     };
-    getAlerts();
+    getFeedbacks();
   }, [currentPage, perPage]);
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
   };
 
-  const paginatedAlerts = alerts.slice(
-    (currentPage - 1) * perPage,
-    currentPage * perPage
-  );
-
   return (
     <div>
       <div className="rounded-lg border-gray-200 py-8 px-10 lg:px-32">
-        <h2 className="text-4xl mb-8 font-bold mt-8">
-          Administración de Alertas
+        <h2 className="text-3xl mb-8 font-bold mt-8">
+          Historial de Retroalimentaciones
         </h2>
         <div className="overflow-x-auto rounded-t-lg">
           <table className="min-w-full divide-y-2 divide-gray-200 bg-white text-sm">
@@ -49,16 +43,7 @@ function HistoryAlerts() {
                   ID
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
-                  Nivel de Alerta
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
-                  Promedio Actual
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
-                  Promedio Mínimo
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
-                  Promedio Máximo
+                  Comentario
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
                   Fecha
@@ -66,14 +51,11 @@ function HistoryAlerts() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {paginatedAlerts.map((alert) => (
-                <tr key={alert._id}>
-                  <td>{alert._id}</td>
-                  <td>{alert.alert_level}</td>
-                  <td>{alert.current_avg}</td>
-                  <td>{alert.min_avg}</td>
-                  <td>{alert.max_avg}</td>
-                  <td>{moment(alert.date).format("DD / MMM / YYYY")}</td>
+              {feedbacks.map((feedback) => (
+                <tr key={feedback._id}>
+                  <td>{feedback._id}</td>
+                  <td>{feedback.feedback}</td>
+                  <td>{moment(feedback.date).format("DD / MMM / YYYY")}</td>
                 </tr>
               ))}
             </tbody>
@@ -107,4 +89,4 @@ function HistoryAlerts() {
   );
 }
 
-export default HistoryAlerts;
+export default HistoryFeedback;

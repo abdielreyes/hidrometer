@@ -3,11 +3,13 @@ import { useState } from "react";
 import axios from "axios";
 import { BASE_URL } from "../utils/variables";
 import { useForm } from "react-hook-form";
-function ModalEdit({ confirm, data }) {
+import { toast } from "react-toastify";
+function ModalEdit({ data, refresh, setRefresh }) {
   const closeModal = () => {
     document.getElementById("modal_edit").close();
   };
   const [user, setUser] = useState({
+    _id: "",
     name: "",
     phone: "",
     postal_code: "",
@@ -21,15 +23,36 @@ function ModalEdit({ confirm, data }) {
           BASE_URL + "/api/user/" + data.user_id
         );
         console.log(response.data);
-        setUser(response.data.user);
+        setUser(response.data);
       } catch (error) {
         console.error(error);
       }
     };
-    fetchUser();
+    if (data.user_id) fetchUser();
   }, [data.user_id]);
   const onSubmit = async (data, e) => {
     e.preventDefault();
+  };
+  const updateUser = async () => {
+    try {
+      const response = await axios.put(
+        `${BASE_URL}/api/user/`,
+        { ...user, id: user._id },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      console.log(response);
+      toast.success("Usuario actualizado correctamente");
+      setRefresh(!refresh);
+      closeModal();
+    } catch (error) {
+      console.error(error);
+
+      toast.error("Error al actualizar el usuario");
+    }
   };
   return (
     <div>
@@ -41,21 +64,55 @@ function ModalEdit({ confirm, data }) {
             </button>
           </form>
           <h3 className="font-bold text-lg">{data.title}</h3>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit)} className="form-control">
             {/* register your input into the hook by invoking the "register" function */}
-            <input {...register("name")} />
-
-            {/* include validation with required or other standard HTML validation rules */}
-            <input {...register("exampleRequired", { required: true })} />
-
-            <input type="submit" value="aasdasdasdasd" />
+            <label className="label" htmlFor="_id">
+              _id
+            </label>
+            <input
+              className="input input-bordered rounded-lg"
+              type="text"
+              disabled
+              {...register("_id")}
+              value={user._id}
+            />
+            <label className="label" htmlFor="name">
+              Nombre
+            </label>
+            <input
+              className="input input-bordered rounded-lg"
+              {...register("name")}
+              value={user.name}
+            />
+            <label htmlFor="name">Código Postal</label>
+            <input
+              className="input input-bordered rounded-lg"
+              {...register("postal_code")}
+              value={user.postal_code}
+            />
+            <label htmlFor="name">Número de teléfono</label>
+            <input
+              className="input input-bordered rounded-lg"
+              {...register("phone")}
+              value={user.phone}
+            />
+            <label className="label" htmlFor="role">
+              Rol
+            </label>
+            <select
+              className="select input-bordered rounded-lg"
+              {...register("role")}
+              value={user.role}
+              onChange={(e) => setUser({ ...user, role: e.target.value })}
+            >
+              <option value="User">Usuario</option>
+              <option value="Admin">Administrador</option>
+            </select>
           </form>
           <div className="modal-action">
-            <form method="dialog">
-              <button className="btn btn-success text-white" onClick={confirm}>
-                {data.button_accept}
-              </button>
-            </form>
+            <button className="btn btn-info text-white" onClick={updateUser}>
+              Guardar
+            </button>
             <button className="btn btn-error text-white" onClick={closeModal}>
               {data.button_decline}
             </button>

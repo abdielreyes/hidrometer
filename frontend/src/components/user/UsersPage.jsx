@@ -180,6 +180,8 @@ function Users() {
           button_accept: "Guardar",
           button_decline: "Cancelar",
         }}
+        refresh={refresh}
+        setRefresh={setRefresh}
       />
     </div>
   );

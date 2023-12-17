@@ -8,6 +8,7 @@ import { MdOutlineFeedback } from "react-icons/md";
 import { FaHome } from "react-icons/fa";
 import { FaBell } from "react-icons/fa";
 import { FaUsersCog } from "react-icons/fa";
+import { MdFeedback } from "react-icons/md";
 
 function Navbar({ children }) {
   const [user, setUser] = useState({});
@@ -50,7 +51,13 @@ function Navbar({ children }) {
                 <li>
                   <a href="/admin">
                     <FaGear />
-                    Panel de administración
+                    Panel de Monitoreo
+                  </a>
+                </li>
+                <li>
+                  <a href="/admin/feedback">
+                    <MdFeedback />
+                    Historial de retroalimentaciones
                   </a>
                 </li>
                 <li>

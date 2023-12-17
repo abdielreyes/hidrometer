@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 const alertSchema = mongoose.Schema({
   alert_level: {
@@ -22,3 +23,8 @@ const alertSchema = mongoose.Schema({
     default: Date.now,
   },
 });
+
+// Aplica la paginación al modelo de alerta
+alertSchema.plugin(mongoosePaginate);
+
+export default mongoose.model("Alert", alertSchema);
