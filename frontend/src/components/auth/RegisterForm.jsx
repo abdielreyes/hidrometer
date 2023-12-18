@@ -156,7 +156,7 @@ export default function LoginForm() {
 
           <div className="relative">
             <input
-              type="number"
+              type="tel"
               {...register("phone", {
                 required: true,
                 maxLength: 10,

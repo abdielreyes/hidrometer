@@ -116,7 +116,7 @@ export default function LoginForm() {
 
           <div className="relative">
             <input
-              type="number"
+              type="tel"
               {...register("phone", {
                 required: "El número de teléfono es obligatorio",
 
