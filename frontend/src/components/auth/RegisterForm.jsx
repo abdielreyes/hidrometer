@@ -37,7 +37,7 @@ export default function LoginForm() {
     console.log(formData);
   };
   const checkPhone = async (phone) => {
-    phone = "+52" + phone;
+    phone = String("+521" + String(phone));
     try {
       const response = await axios.post(
         BASE_URL + "/api/auth/phoneIsRegistered",
@@ -55,7 +55,7 @@ export default function LoginForm() {
 
   const sendVerificationCode = async (phone) => {
     try {
-      phone = "+52" + phone;
+      phone = String("+521" + String(phone));
       console.log("Sending verification code to " + phone);
 
       const response = await axios.post(
@@ -74,8 +74,8 @@ export default function LoginForm() {
     }
   };
   const sendRegistration = async (formData) => {
-    formData.phone = "+52" + formData.phone;
     try {
+      formData.phone = String("+521" + String(formData.phone));
       const response = await axios.post(
         BASE_URL + "/api/auth/registration/verify",
         formData

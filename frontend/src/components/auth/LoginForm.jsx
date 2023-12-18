@@ -31,8 +31,8 @@ export default function LoginForm() {
     console.log(formData);
   };
   const checkPhone = async (phone) => {
-    phone = "+52" + phone;
     try {
+      phone = String("+521" + String(phone));
       const response = await axios.post(
         BASE_URL + "/api/auth/phoneIsRegistered",
         {
@@ -49,7 +49,7 @@ export default function LoginForm() {
   };
   const sendVerificationCode = async (phone) => {
     try {
-      phone = "+52" + phone;
+      phone = String("+521" + String(phone));
       const response = await axios.post(
         BASE_URL + "/api/auth/login/sendVerify",
         {
@@ -69,7 +69,7 @@ export default function LoginForm() {
 
   const sendLogin = async (formData) => {
     try {
-      formData.phone = "+52" + formData.phone;
+      formData.phone = String("+521" + String(formData.phone));
       const response = await axios.post(BASE_URL + "/api/auth/login/verify", {
         phone: formData.phone,
         code: formData.code,
@@ -141,9 +141,9 @@ export default function LoginForm() {
 
             <div className="relative">
               <input
+                type="tel"
                 {...register("code", {
                   required: true,
-                  type: "number",
                 })}
                 className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
                 placeholder="Código de verificación"
