@@ -28,14 +28,17 @@ export default function LoginForm() {
   const checkPhone = async (phone) => {
     phone = "+52" + phone;
     try {
-      const response = axios.post(BASE_URL + "/api/auth/checkPhone", {
-        phone: phone,
-      });
-      const data = await response.data;
-      console.log(data);
+      const response = await axios.post(
+        BASE_URL + "/api/auth/phoneIsRegistered",
+        {
+          phone: phone,
+        }
+      );
+
+      console.log(response);
       return true;
     } catch (error) {
-      console.error(error.response.data.message);
+      console.error(error);
       return false;
     }
   };

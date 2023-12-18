@@ -20,9 +20,11 @@ export default function LoginForm() {
       const phone = formData.phone;
       const phoneRegistered = await checkPhone(phone);
       console.log(phoneRegistered);
-      if (phoneRegistered) {
+      if (!phoneRegistered) {
         sendVerificationCode(phone);
         setVerified(true);
+      } else {
+        toast.error("El número de teléfono ya está registrado");
       }
     } else {
       sendRegistration(formData);
@@ -32,11 +34,13 @@ export default function LoginForm() {
   const checkPhone = async (phone) => {
     phone = "+52" + phone;
     try {
-      const response = await axios.post(BASE_URL + "/api/auth/checkPhone", {
-        phone: phone,
-      });
-      const data = await response.data;
-      console.log(data);
+      const response = await axios.post(
+        BASE_URL + "/api/auth/phoneIsRegistered",
+        {
+          phone: phone,
+        }
+      );
+      console.log(response);
       return true;
     } catch (error) {
       toast.error(error.response.data.message);

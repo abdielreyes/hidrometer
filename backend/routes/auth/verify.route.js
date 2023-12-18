@@ -13,10 +13,27 @@ router.post("/checkPhone", async (req, res) => {
     const { phone } = req.body;
     const users = await getUsers({ phone });
     console.log(users);
+    console.log(users.length);
     if (users.length > 0) {
       res.status(400).json({ message: "El teléfono ya se ha registrado" });
     } else {
       res.status(200).json({ message: "El usuario no existe" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error al obtener usuario" });
+  }
+});
+router.post("/phoneIsRegistered", async (req, res) => {
+  try {
+    const { phone } = req.body;
+    const users = await getUsers({ phone });
+    console.log(users);
+    console.log(users.length);
+    if (users.length == 0) {
+      res.status(404).json({ message: "El usuario no existe" });
+    } else {
+      res.status(200).json({ message: "El teléfono ya se ha registrado" });
     }
   } catch (error) {
     console.error(error);
