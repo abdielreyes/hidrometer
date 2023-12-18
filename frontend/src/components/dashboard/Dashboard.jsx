@@ -36,7 +36,7 @@ function Dashboard() {
       {sensors.map((sensor, index) => {
         return (
           <div key={index}>
-            <div className="text-3xl font-bold ">Sensor {index}</div>
+            <div className="text-3xl font-bold ">Sensor {sensor.sensorId}</div>
             <InfoSensor key={index} data={sensor} config={config} />
           </div>
         );

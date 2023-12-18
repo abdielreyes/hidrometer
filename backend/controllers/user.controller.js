@@ -77,7 +77,7 @@ export const getUserById = async (req, res) => {
 
 // Controlador para actualizar un usuario por ID
 export const updateUserById = async (req, res) => {
-  const userId = req.body.id;
+  const userId = req.body._id;
   console.log(req.body);
   try {
     const updatedUser = await User.findByIdAndUpdate(userId, req.body, {

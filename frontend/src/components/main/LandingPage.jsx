@@ -1,6 +1,13 @@
 function LandingPage() {
   return (
     <section className="relative flex flex-wrap lg:h-screen lg:items-center">
+      <div className="relative h-64 w-full sm:h-96 lg:h-full lg:w-1/2">
+        <img
+          alt="Student"
+          src="/img/sensores_en_rio.png"
+          className="h-56 w-full object-cover object-center sm:h-full"
+        />
+      </div>
       <div className="w-full lg:px-24 px-4 py-12 sm:px-6 sm:py-16 lg:w-1/2 lg:py-24 text-center">
         <h2 className="text-2xl font-bold text-gray-900 md:text-3xl">
           Hidrometer
@@ -28,13 +35,6 @@ function LandingPage() {
             Registrarme
           </a>
         </div>
-      </div>
-      <div className="relative h-64 w-full sm:h-96 lg:h-full lg:w-1/2">
-        <img
-          alt="Student"
-          src="/img/sensores_en_rio.png"
-          className="h-56 w-full object-cover object-center sm:h-full"
-        />
       </div>
     </section>
   );

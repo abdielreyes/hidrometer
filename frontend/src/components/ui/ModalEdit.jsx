@@ -35,15 +35,12 @@ function ModalEdit({ data, refresh, setRefresh }) {
   };
   const updateUser = async () => {
     try {
-      const response = await axios.put(
-        `${BASE_URL}/api/user/`,
-        { ...user, id: user._id },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      console.log(user);
+      const response = await axios.put(`${BASE_URL}/api/user/`, user, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       console.log(response);
       toast.success("Usuario actualizado correctamente");
       setRefresh(!refresh);
@@ -74,7 +71,7 @@ function ModalEdit({ data, refresh, setRefresh }) {
               type="text"
               disabled
               {...register("_id")}
-              defaultValue={user._id}
+              value={user._id}
             />
             <label className="label" htmlFor="name">
               Nombre
@@ -83,18 +80,23 @@ function ModalEdit({ data, refresh, setRefresh }) {
               className="input input-bordered rounded-lg"
               {...register("name")}
               defaultValue={user.name}
+              onChange={(e) => setUser({ ...user, name: e.target.value })}
             />
             <label htmlFor="name">Código Postal</label>
             <input
               className="input input-bordered rounded-lg"
               {...register("postal_code")}
               defaultValue={user.postal_code}
+              onChange={(e) =>
+                setUser({ ...user, postal_code: e.target.value })
+              }
             />
             <label htmlFor="name">Número de teléfono</label>
             <input
               className="input input-bordered rounded-lg"
               {...register("phone")}
               defaultValue={user.phone}
+              onChange={(e) => setUser({ ...user, phone: e.target.value })}
             />
             <label className="label" htmlFor="role">
               Rol
@@ -102,7 +104,7 @@ function ModalEdit({ data, refresh, setRefresh }) {
             <select
               className="select input-bordered rounded-lg"
               {...register("role")}
-              value={user.role}
+              defaultValue={user.role}
               onChange={(e) => setUser({ ...user, role: e.target.value })}
             >
               <option value="User">Usuario</option>

@@ -36,15 +36,23 @@ mqtt.on("disconnect", () => {
 });
 mqtt.on("message", async (topic, message) => {
   try {
-    console.log(message.toString());
     message = JSON.parse(message.toString());
     const { sensorId, data, flag } = message;
     redis.lPush("sensor" + sensorId, String(data));
     redis.lTrim("sensor" + sensorId, 0, MAX_SIZE);
     const r = await redis.lRange("sensor" + sensorId, 0, MAX_SIZE);
+    console.log(message);
+    // Micro.sensors[sensorId]={
+    //   sensorId,
+    //   avg: calculateAverage(r),
+    //   current: data,
+    //   min: Math.min(...r),
+    //   max: Math.max(...r),
+    //   flag,
+    // }
 
     const existingSensorIndex = Micro.sensors.findIndex(
-      (sensor) => sensor.sensorId === sensorId
+      (sensor) => sensor.sensorId == sensorId
     );
 
     if (existingSensorIndex !== -1) {
@@ -100,7 +108,7 @@ mqtt.on("message", async (topic, message) => {
       Micro.config.alerted = false;
     }
 
-    console.log("Micro", Micro);
+    // console.log("Micro", Micro);
     // console.log("New measurement");
   } catch (error) {
     console.log(error);
