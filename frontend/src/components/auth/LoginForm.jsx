@@ -7,7 +7,12 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 export default function LoginForm() {
   const [verified, setVerified] = useState(false);
-  const { register, handleSubmit, getValues } = useForm();
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    formState: { errors },
+  } = useForm();
   const navigate = useNavigate();
   const onSubmit = async (formData) => {
     console.log(BASE_URL);
@@ -100,20 +105,27 @@ export default function LoginForm() {
         className="mx-auto mb-0 mt-8 max-w-md space-y-4"
       >
         <div>
+          {errors.phone && (
+            <span className="text-error">
+              El número de teléfono debe ser de 10 dígitos.
+            </span>
+          )}
           <label htmlFor="phone" className="sr-only">
             Número de Teléfono
           </label>
 
           <div className="relative">
             <input
+              type="number"
               {...register("phone", {
-                required: true,
-                type: "number",
+                required: "El número de teléfono es obligatorio",
+
+                length: "El número de teléfono debe ser de 10 dígitos",
                 maxLength: 10,
                 minLength: 10,
               })}
-              className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
-              placeholder="Número de teléfono"
+              className="w-full  rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
+              placeholder="Número de teléfono a 10 dígitos"
             />
 
             <span className="absolute inset-y-0 end-0 grid place-content-center px-4">

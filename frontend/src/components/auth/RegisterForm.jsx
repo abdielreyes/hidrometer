@@ -14,7 +14,12 @@ import axios from "axios";
 export default function LoginForm() {
   const [verified, setVerified] = useState(false);
   const navigate = useNavigate();
-  const { register, handleSubmit, getValues } = useForm();
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    formState: { errors },
+  } = useForm();
   const onSubmit = async (formData) => {
     if (!verified) {
       const phone = formData.phone;
@@ -128,6 +133,7 @@ export default function LoginForm() {
 
           <div className="relative">
             <input
+              type="number"
               {...register("postal_code", { required: true, type: "number" })}
               className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
               placeholder="Código postal"
@@ -139,15 +145,20 @@ export default function LoginForm() {
           </div>
         </div>
         <div>
+          {errors.phone && (
+            <span className="text-error">
+              El número de teléfono debe ser de 10 dígitos.
+            </span>
+          )}
           <label htmlFor="phone" className="sr-only">
             Número de Teléfono
           </label>
 
           <div className="relative">
             <input
+              type="number"
               {...register("phone", {
                 required: true,
-                type: "number",
                 maxLength: 10,
                 minLength: 10,
               })}
