@@ -74,7 +74,7 @@ function ModalEdit({ data, refresh, setRefresh }) {
               type="text"
               disabled
               {...register("_id")}
-              value={user._id}
+              defaultValue={user._id}
             />
             <label className="label" htmlFor="name">
               Nombre
@@ -82,19 +82,19 @@ function ModalEdit({ data, refresh, setRefresh }) {
             <input
               className="input input-bordered rounded-lg"
               {...register("name")}
-              value={user.name}
+              defaultValue={user.name}
             />
             <label htmlFor="name">Código Postal</label>
             <input
               className="input input-bordered rounded-lg"
               {...register("postal_code")}
-              value={user.postal_code}
+              defaultValue={user.postal_code}
             />
             <label htmlFor="name">Número de teléfono</label>
             <input
               className="input input-bordered rounded-lg"
               {...register("phone")}
-              value={user.phone}
+              defaultValue={user.phone}
             />
             <label className="label" htmlFor="role">
               Rol
