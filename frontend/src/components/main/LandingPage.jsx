@@ -14,7 +14,7 @@ function LandingPage() {
 
         <div className="mt-4 md:mt-8">
           <a
-            href="/register"
+            href="/login"
             className="inline-block rounded bg-sky-600 px-12 py-3 text-sm font-medium text-white transition hover:sky-700 focus:outline-none focus:ring focus:ring-sky-200"
           >
             ¡Iniciar sesión!
