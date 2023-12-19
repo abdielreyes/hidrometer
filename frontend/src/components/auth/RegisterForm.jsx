@@ -19,9 +19,20 @@ export default function LoginForm() {
     handleSubmit,
     getValues,
     formState: { errors },
+    setError,
+    clearErrors
   } = useForm();
   const onSubmit = async (formData) => {
+    clearErrors()
     if (!verified) {
+      const postalCode = String(formData.postal_code);
+      if (!(postalCode == "53340" || postalCode == "02719")) {
+        setError("postal_code", {
+          type: "manual",
+          message: "El código postal no es de un área válida",
+        })
+        return;
+      }
       const phone = formData.phone;
       const phoneRegistered = await checkPhone(phone);
       console.log(phoneRegistered);
@@ -127,6 +138,11 @@ export default function LoginForm() {
           </div>
         </div>
         <div>
+          {errors.postal_code && (
+            <span className="text-error">
+              {errors.postal_code.message}
+            </span>
+          )}
           <label htmlFor="email" className="sr-only">
             Código Postal
           </label>
