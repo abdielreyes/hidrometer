@@ -8,6 +8,7 @@ const LEVEL_ALERT_MIN = 10;
 const initialMicro = {
   sensors: [],
   total: {
+    speed: 0,
     current_avg: 0,
     min_avg: 0,
     max_avg: 0,
@@ -42,19 +43,10 @@ mqtt.on("message", async (topic, message) => {
     redis.lTrim("sensor" + sensorId, 0, MAX_SIZE);
     const r = await redis.lRange("sensor" + sensorId, 0, MAX_SIZE);
     console.log(message);
-    // Micro.sensors[sensorId]={
-    //   sensorId,
-    //   avg: calculateAverage(r),
-    //   current: data,
-    //   min: Math.min(...r),
-    //   max: Math.max(...r),
-    //   flag,
-    // }
 
     const existingSensorIndex = Micro.sensors.findIndex(
       (sensor) => sensor.sensorId == sensorId
     );
-
     if (existingSensorIndex !== -1) {
       // Si el sensor con el mismo sensorId existe, actualiza sus propiedades
       Micro.sensors[existingSensorIndex] = {
@@ -76,7 +68,6 @@ mqtt.on("message", async (topic, message) => {
         flag,
       });
     }
-    // Micro.sensors = Micro.sensors.filter(item => item !== undefined)
     const sensorCount = Micro.sensors.length;
     const totalAvg =
       Micro.sensors.reduce((sum, sensor) => sum + sensor.avg, 0) / sensorCount;
@@ -87,6 +78,12 @@ mqtt.on("message", async (topic, message) => {
       Micro.sensors.reduce((sum, sensor) => sum + sensor.min, 0) / sensorCount;
     const maxAvg =
       Micro.sensors.reduce((sum, sensor) => sum + sensor.max, 0) / sensorCount;
+
+    redis.lPush("avg", String(currentAvg));
+    redis.lTrim("avg", 0, 1);
+    const averages = await redis.lRange("avg", 0, 1);
+    const speed = averages[0] - averages[1];
+    Micro.total.speed = speed;
 
     Micro.total = {
       current_avg: currentAvg,
@@ -108,7 +105,7 @@ mqtt.on("message", async (topic, message) => {
       Micro.config.alerted = false;
     }
 
-    // console.log("Micro", Micro);
+    console.log("Micro", Micro);
     // console.log("New measurement");
   } catch (error) {
     console.log(error);

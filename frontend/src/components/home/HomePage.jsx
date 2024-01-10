@@ -3,12 +3,13 @@ import { BASE_URL } from "../utils/variables";
 import { useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import InfoAvg from "../dashboard/InfoAvg";
 const initialDataState = {
   alert_level: null,
-  avg: 0,
-  max: 0,
-  min: 0,
-  current: 10,
+  max_avg: 0,
+  min_avg: 0,
+  current_avg: 10,
+  speed: 0,
 };
 const initialConfigState = {
   LEVEL_ALERT_MAX: 0,
@@ -41,6 +42,19 @@ function HomePage() {
     }
     return number.toFixed(2);
   };
+  const getTimetoHeight = (actualHeight, goalHeight, speed) => {
+    console.log(actualHeight, goalHeight, speed);
+    actualHeight = Number(actualHeight);
+    goalHeight = Number(goalHeight);
+    speed = Number(speed);
+    if (speed == 0) {
+      return 0;
+    }
+    let deltaHeight = goalHeight - actualHeight;
+    return `Se alcanzará en ${
+      deltaHeight / speed
+    } segundos dada la velocidad actual.`;
+  };
   return (
     <div>
       <div className="flex-row ">
@@ -57,7 +71,14 @@ function HomePage() {
                 <div className="inline-flex items-baseline">
                   Alto
                   <div className="text-sm">
-                    &nbsp;(&gt;{config.LEVEL_ALERT_MAX}&nbsp;{config.UNIT})
+                    &nbsp;(&lt;{config.LEVEL_ALERT_MAX}&nbsp;{config.UNIT}
+                    &nbsp;
+                    {getTimetoHeight(
+                      data.current_avg,
+                      config.LEVEL_ALERT_MAX,
+                      data.speed
+                    )}
+                    )
                   </div>
                 </div>
               </li>
@@ -75,7 +96,7 @@ function HomePage() {
                 <div className="inline-flex items-baseline">
                   Medio
                   <div className="text-sm">
-                    &nbsp;(&gt;{config.LEVEL_ALERT_MID}&nbsp;{config.UNIT})
+                    &nbsp;(&lt;{config.LEVEL_ALERT_MID}&nbsp;{config.UNIT})
                   </div>
                 </div>
               </li>
@@ -95,7 +116,7 @@ function HomePage() {
                 <div className="inline-flex items-baseline">
                   Bajo
                   <div className="text-sm">
-                    &nbsp;(&gt;{config.LEVEL_ALERT_MIN}&nbsp;{config.UNIT})
+                    &nbsp;(&lt;{config.LEVEL_ALERT_MIN}&nbsp;{config.UNIT})
                   </div>
                 </div>
               </li>
@@ -103,6 +124,18 @@ function HomePage() {
           </div>
         </div>
         <div className="flex-auto flex-col flex-wrap  align-middle lg:w-2/4 m-auto">
+          {" "}
+          <dl className="flex flex-row gap-x-3">
+            <div className="flex flex-auto flex-col rounded-lg border border-gray-100  px-4 py-8 text-center bg-zinc-100 h-1/6">
+              <dt className="order-last text-lg font-medium text-gray-500">
+                Velocidad actual
+              </dt>
+
+              <dd className="text-4xl font-extrabold text-slate-600 md:text-5xl">
+                {fixNumber(data.speed) + " " + config.UNIT + "/s"}
+              </dd>
+            </div>
+          </dl>
           <dl className="flex flex-row gap-x-3">
             <div className="flex flex-auto flex-col rounded-lg border border-gray-100  px-4 py-8 text-center bg-zinc-100 h-1/6">
               <dt className="order-last text-lg font-medium text-gray-500">
@@ -137,6 +170,7 @@ function HomePage() {
             </div>
           </dl>
         </div>
+        <div className="px-10"></div>
       </div>
     </div>
   );

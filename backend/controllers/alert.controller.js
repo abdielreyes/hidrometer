@@ -1,12 +1,8 @@
 import { getPhones } from "./user.controller.js";
 import Micro from "./micro.controller.js";
-import {
-  client,
-  TWILIO_US_PHONE_NUMBER,
-  TWILIO_MESSAGING_SERVICE_SID,
-} from "../config/twilio.js";
+import { client, TWILIO_MESSAGING_SERVICE_SID } from "../config/twilio.js";
 import Alert from "../models/alert.model.js";
-const TIME_RELEASE = 1;
+const TIME_RELEASE = 3; //minutes
 const ALERT_MESSAGE_2 =
   "[Hidrometer] Atención, el nivel de agua es muy alto. Tome precauciones inmediatamente.";
 const ALERT_MESSAGE_1 =
@@ -77,13 +73,8 @@ export const sendAlert = async (level) => {
 };
 
 function timeDiff(previousDate, currentDate) {
-  // Calculate the difference in milliseconds
   const timeDifferenceInMillis = currentDate - previousDate;
-
-  // Convert the difference to minutes
   const timeDifferenceInMinutes = timeDifferenceInMillis / (1000 * 60);
-
-  // Check if at least 5 minutes have passed
   return timeDifferenceInMinutes >= TIME_RELEASE;
 }
 function sendSMS(to, body) {
