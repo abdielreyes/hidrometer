@@ -3,7 +3,6 @@ import { BASE_URL } from "../utils/variables";
 import { useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import InfoAvg from "../dashboard/InfoAvg";
 const initialDataState = {
   alert_level: null,
   max_avg: 0,
@@ -42,24 +41,12 @@ function HomePage() {
     }
     return number.toFixed(2);
   };
-  const getTimetoHeight = (actualHeight, goalHeight, speed) => {
-    console.log(actualHeight, goalHeight, speed);
-    actualHeight = Number(actualHeight);
-    goalHeight = Number(goalHeight);
-    speed = Number(speed);
-    if (speed == 0) {
-      return 0;
-    }
-    let deltaHeight = goalHeight - actualHeight;
-    return `Se alcanzará en ${
-      deltaHeight / speed
-    } segundos dada la velocidad actual.`;
-  };
+
   return (
     <div>
       <div className="flex-row ">
         <div className="flex-auto h-1/2 ">
-          <div className="flex flex-col  align-middle items-center justify-center bg-content w-fit m-auto p-10">
+          <div className="flex flex-col  align-middle items-center justify-center bg-content w-fit m-auto px-10 pt-5 pb-5">
             <h3 className="text-3xl font-bold">Nivel del agua</h3>
             <ul className="steps steps-vertical text-2xl z-0">
               <li
@@ -71,14 +58,7 @@ function HomePage() {
                 <div className="inline-flex items-baseline">
                   Alto
                   <div className="text-sm">
-                    &nbsp;(&lt;{config.LEVEL_ALERT_MAX}&nbsp;{config.UNIT}
-                    &nbsp;
-                    {getTimetoHeight(
-                      data.current_avg,
-                      config.LEVEL_ALERT_MAX,
-                      data.speed
-                    )}
-                    )
+                    &nbsp;(&lt;{config.LEVEL_ALERT_MAX}&nbsp;{config.UNIT})
                   </div>
                 </div>
               </li>
@@ -121,9 +101,12 @@ function HomePage() {
                 </div>
               </li>
             </ul>
+            {`Dada la velocidad, el río se desbordará en ${
+              data.time_to_flood || "0"
+            } segundos`}
           </div>
         </div>
-        <div className="flex-auto flex-col flex-wrap  align-middle lg:w-2/4 m-auto">
+        <div className="flex-auto flex-col flex-wrap  align-middle lg:w-2/4 m-auto ">
           {" "}
           <dl className="flex flex-row gap-x-3">
             <div className="flex flex-auto flex-col rounded-lg border border-gray-100  px-4 py-8 text-center bg-zinc-100 h-1/6">

@@ -1,10 +1,11 @@
 import { redis } from "../config/database.js";
 import mqtt from "../config/mqtt.js";
 import { sendAlert } from "./alert.controller.js";
-const MAX_SIZE = 120;
+const MAX_SIZE = 60;
 const LEVEL_ALERT_MAX = 2;
 const LEVEL_ALERT_MID = 5;
 const LEVEL_ALERT_MIN = 10;
+const TIME_TO_ALERT = 2;
 const initialMicro = {
   sensors: [],
   total: {
@@ -19,12 +20,13 @@ const initialMicro = {
     LEVEL_ALERT_MAX,
     LEVEL_ALERT_MID,
     LEVEL_ALERT_MIN,
+    TIME_TO_ALERT,
     alerted: false,
     last_alert: null,
     UNIT: "cm",
   },
 };
-let Micro = initialMicro;
+var Micro = initialMicro;
 mqtt.subscribe("hidrometer");
 setInterval(() => {
   Micro.sensors.forEach((sensor) => {
@@ -42,7 +44,7 @@ mqtt.on("message", async (topic, message) => {
     redis.lPush("sensor" + sensorId, String(data));
     redis.lTrim("sensor" + sensorId, 0, MAX_SIZE);
     const r = await redis.lRange("sensor" + sensorId, 0, MAX_SIZE);
-    console.log(message);
+    // console.log(message);
 
     const existingSensorIndex = Micro.sensors.findIndex(
       (sensor) => sensor.sensorId == sensorId
@@ -79,19 +81,27 @@ mqtt.on("message", async (topic, message) => {
     const maxAvg =
       Micro.sensors.reduce((sum, sensor) => sum + sensor.max, 0) / sensorCount;
 
-    redis.lPush("avg", String(currentAvg));
-    redis.lTrim("avg", 0, 1);
-    const averages = await redis.lRange("avg", 0, 1);
-    const speed = averages[0] - averages[1];
-    Micro.total.speed = speed;
-
     Micro.total = {
       current_avg: currentAvg,
       min_avg: minAvg,
       max_avg: maxAvg,
       flag: Micro.sensors.some((sensor) => sensor.flag !== 0),
     };
-    if (Micro.total.flag && Micro.total.current_avg <= LEVEL_ALERT_MAX) {
+
+    redis.lPush("avg", String(currentAvg));
+    redis.rPop("avg");
+    const averages = await redis.lRange("avg", 0, 1);
+    const speed = averages[0] - averages[1];
+    Micro.total.speed = speed;
+    Micro.total.time_to_flood = getTimetoHeight(
+      currentAvg,
+      Micro.config.LEVEL_ALERT_MAX,
+      speed
+    );
+    if (
+      (Micro.total.flag && Micro.total.current_avg <= LEVEL_ALERT_MAX) ||
+      Micro.total.timetoheight <= TIME_TO_ALERT
+    ) {
       Micro.total.alert_level = 2;
       // sendAlert(Micro.total.alert_level);
     } else if (
@@ -104,7 +114,19 @@ mqtt.on("message", async (topic, message) => {
       Micro.total.alert_level = 0;
       Micro.config.alerted = false;
     }
-
+    // if (Micro.total.flag && Micro.total.current_avg <= LEVEL_ALERT_MAX) {
+    //   Micro.total.alert_level = 2;
+    //   // sendAlert(Micro.total.alert_level);
+    // } else if (
+    //   Micro.total.current_avg <= LEVEL_ALERT_MID &&
+    //   Micro.total.current_avg > LEVEL_ALERT_MAX
+    // ) {
+    //   Micro.total.alert_level = 1;
+    //   // sendAlert(Micro.total.alert_level);
+    // } else {
+    //   Micro.total.alert_level = 0;
+    //   Micro.config.alerted = false;
+    // }
     console.log("Micro", Micro);
     // console.log("New measurement");
   } catch (error) {
@@ -117,5 +139,21 @@ const calculateAverage = (array) => {
   const avg = sum / (array.length || 0);
   return Number(avg);
 };
-
+const fixNumber = (number) => {
+  if (number == null) {
+    return 0;
+  }
+  return number.toFixed(2);
+};
+const getTimetoHeight = (actualHeight, goalHeight, speed) => {
+  console.log(actualHeight, goalHeight, speed);
+  actualHeight = Number(actualHeight);
+  goalHeight = Number(goalHeight);
+  speed = Number(speed);
+  if (speed == 0) {
+    return 0;
+  }
+  let deltaHeight = actualHeight - goalHeight;
+  return fixNumber(deltaHeight / speed);
+};
 export default Micro;
