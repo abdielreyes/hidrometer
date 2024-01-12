@@ -34,3 +34,4 @@ export const redis = await createClient({
 redis.del("sensor1");
 redis.del("sensor2");
 redis.del("sensor3");
+redis.del("avg")
