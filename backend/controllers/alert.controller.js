@@ -4,9 +4,9 @@ import { client, TWILIO_MESSAGING_SERVICE_SID } from "../config/twilio.js";
 import Alert from "../models/alert.model.js";
 const TIME_RELEASE = 3; //minutes
 const ALERT_MESSAGE_2 =
-  "[Hidrometer] Atención, el nivel de agua es muy alto. Tome precauciones inmediatamente.";
+  "[Hidrometer] Atención, el nivel de agua es peligroso, se está desbordando. Tome precauciones inmediatamente.";
 const ALERT_MESSAGE_1 =
-  "[Hidrometer] Atención, el nivel de agua es alto. Tome precauciones.";
+  "[Hidrometer] Atención, el nivel de agua es alto y está próximo a desbordarse. Tome precauciones.";
 export const getAlerts = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;

@@ -91,13 +91,13 @@ mqtt.on("message", async (topic, message) => {
       Micro.total.timetoheight <= TIME_TO_ALERT
     ) {
       Micro.total.alert_level = 2;
-      // sendAlert(Micro.total.alert_level);
+      sendAlert(Micro.total.alert_level);
     } else if (
       Micro.total.current_avg <= LEVEL_ALERT_MID &&
       Micro.total.current_avg > LEVEL_ALERT_MAX
     ) {
       Micro.total.alert_level = 1;
-      // sendAlert(Micro.total.alert_level);
+      sendAlert(Micro.total.alert_level);
     } else {
       Micro.total.alert_level = 0;
       Micro.config.alerted = false;
