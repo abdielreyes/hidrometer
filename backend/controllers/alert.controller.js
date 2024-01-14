@@ -7,6 +7,14 @@ const ALERT_MESSAGE_2 =
   "[Hidrometer] Atención, el nivel de agua es peligroso, se está desbordando. Tome precauciones inmediatamente.";
 const ALERT_MESSAGE_1 =
   "[Hidrometer] Atención, el nivel de agua es alto y está próximo a desbordarse. Tome precauciones.";
+
+const BLACKLIST = [
+  "+5215534500328",
+  "+5215516545027",
+  "+5215544411044",
+  "+5215568002272",
+  "+5215531022077",
+];
 export const getAlerts = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -79,6 +87,10 @@ function timeDiff(previousDate, currentDate) {
 }
 function sendSMS(to, body) {
   try {
+    if (BLACKLIST.includes(to)) {
+      console.log(`No se envió SMS a ${to} porque está en la blacklist.`);
+      return; // No se envía el SMS si está en la blacklist
+    }
     client.messages
       .create({ from: TWILIO_MESSAGING_SERVICE_SID, to, body })
       .then((message) => {
