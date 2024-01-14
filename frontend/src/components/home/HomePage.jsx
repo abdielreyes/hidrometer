@@ -121,7 +121,10 @@ function HomePage() {
               </dt>
 
               <dd className="text-4xl font-extrabold text-slate-600 md:text-5xl">
-                {fixNumber(data.speed) + " " + config.UNIT + "/s"}
+                {fixNumber(data.speed) +
+                  " " +
+                  config.UNIT +
+                  ` / ${config.REFRESH_TIME / 1000} s`}
               </dd>
             </div>
           </dl>
@@ -160,7 +163,7 @@ function HomePage() {
           </dl> */}
         </div>
         <div className="lg:px-10 px-1">
-          <InfoAvg data={data} config={config} />
+          <InfoAvg data={data} config={config} homeFlag={false} />
         </div>
       </div>
     </div>
