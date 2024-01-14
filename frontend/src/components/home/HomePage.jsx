@@ -37,7 +37,7 @@ function HomePage() {
         );
         clearInterval(interval);
       }
-    }, config.REFRESH_TIME);
+    }, config.REFRESH_TIME || 5000);
     return () => clearInterval(interval);
   }, []);
   const fixNumber = (number) => {
