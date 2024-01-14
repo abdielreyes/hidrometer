@@ -17,6 +17,7 @@ const initialConfigState = {
   LEVEL_ALERT_MID: 0,
   LEVEL_ALERT_MIN: 0,
   UNIT: "cm",
+  REFRESH_TIME: 1000,
 };
 function HomePage() {
   const [loading, setLoading] = useState(true);
@@ -36,7 +37,7 @@ function HomePage() {
         );
         clearInterval(interval);
       }
-    }, 1000);
+    }, config.REFRESH_TIME || 1000);
     return () => clearInterval(interval);
   }, []);
   const fixNumber = (number) => {
@@ -74,8 +75,8 @@ function HomePage() {
                   (data.alert_level == 2
                     ? "step-error"
                     : data.alert_level == 1
-                      ? "step-warning"
-                      : "")
+                    ? "step-warning"
+                    : "")
                 }
               >
                 <div className="inline-flex items-baseline">
@@ -92,10 +93,10 @@ function HomePage() {
                   (data.alert_level == 2
                     ? "step-error"
                     : data.alert_level == 1
-                      ? "step-warning"
-                      : data.alert_level == 0
-                        ? "step-success"
-                        : "")
+                    ? "step-warning"
+                    : data.alert_level == 0
+                    ? "step-success"
+                    : "")
                 }
               >
                 <div className="inline-flex items-baseline">
@@ -106,8 +107,9 @@ function HomePage() {
                 </div>
               </li>
             </ul>
-            {`Dada la velocidad, el río se desbordará en ${data.time_to_flood || "-"
-              } segundos aproximadamente`}
+            {`Dada la velocidad, el río se desbordará en ${
+              data.time_to_flood || "-"
+            } segundos aproximadamente`}
           </div>
         </div>
         <div className="flex-auto flex-col flex-wrap  align-middle lg:w-2/4 m-auto ">

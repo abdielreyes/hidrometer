@@ -82,11 +82,10 @@ mqtt.on("message", async (topic, message) => {
     const maxAvg =
       Micro.sensors.reduce((sum, sensor) => sum + sensor.max, 0) / sensorCount;
 
-
-    Micro.total.current_avg = currentAvg
-    Micro.total.min_avg = minAvg
-    Micro.total.max_avg = maxAvg
-    Micro.total.flag = Micro.sensors.some((sensor) => sensor.flag !== 0)
+    Micro.total.current_avg = currentAvg;
+    Micro.total.min_avg = minAvg;
+    Micro.total.max_avg = maxAvg;
+    Micro.total.flag = Micro.sensors.some((sensor) => sensor.flag !== 0);
     if (
       (Micro.total.flag && Micro.total.current_avg <= LEVEL_ALERT_MAX) ||
       Micro.total.timetoheight <= TIME_TO_ALERT
@@ -146,7 +145,9 @@ const getTimetoHeight = (actualHeight, goalHeight, speed) => {
   return fixNumber(deltaHeight / speed);
 };
 setInterval(() => {
-  const speed = Micro.total.current_avg - Micro.total.previous_avg;
+  const speed =
+    (Micro.total.current_avg - Micro.total.previous_avg) /
+    (REFRESH_TIME / 1000);
   const time_to_flood = getTimetoHeight(
     Micro.total.current_avg,
     Micro.config.LEVEL_ALERT_MAX,
@@ -158,6 +159,5 @@ setInterval(() => {
     time_to_flood,
     previous_avg: Micro.total.current_avg,
   };
-}, REFRESH_TIME
-)
+}, REFRESH_TIME);
 export default Micro;
