@@ -6,7 +6,7 @@ const LEVEL_ALERT_MAX = 2;
 const LEVEL_ALERT_MID = 5;
 const LEVEL_ALERT_MIN = 10;
 const TIME_TO_ALERT = 2;
-const REFRESH_TIME = 1000;
+const REFRESH_TIME = 5000;
 const initialMicro = {
   sensors: [],
   total: {

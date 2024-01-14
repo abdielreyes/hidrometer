@@ -37,7 +37,7 @@ function HomePage() {
         );
         clearInterval(interval);
       }
-    }, config.REFRESH_TIME || 1000);
+    }, config.REFRESH_TIME);
     return () => clearInterval(interval);
   }, []);
   const fixNumber = (number) => {
@@ -107,9 +107,9 @@ function HomePage() {
                 </div>
               </li>
             </ul>
-            {`Dada la velocidad, el río se desbordará en ${
+            {/* {`Dada la velocidad, el río se desbordará en ${
               data.time_to_flood || "-"
-            } segundos aproximadamente`}
+            } segundos aproximadamente`} */}
           </div>
         </div>
         <div className="flex-auto flex-col flex-wrap  align-middle lg:w-2/4 m-auto ">
