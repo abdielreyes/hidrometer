@@ -17,7 +17,7 @@ const initialConfigState = {
   LEVEL_ALERT_MID: 0,
   LEVEL_ALERT_MIN: 0,
   UNIT: "cm",
-  REFRESH_TIME: 1000,
+  REFRESH_TIME: 5000,
 };
 function HomePage() {
   const [loading, setLoading] = useState(true);

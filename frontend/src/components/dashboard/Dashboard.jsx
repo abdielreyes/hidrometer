@@ -28,15 +28,13 @@ function Dashboard() {
         toast.error(error.response.data.message);
         console.error(error);
       }
-    }, 2000);
+    }, 5000);
     return () => clearInterval(interval);
   });
-  useEffect(() => { }, []);
+  useEffect(() => {}, []);
   return (
     <div>
-
       <div style={{ "margin-top": "-0px" }}>
-
         <Spinner loading={loading} />
       </div>
       <div className="px-10 lg:px-32 pt-10">
@@ -45,7 +43,9 @@ function Dashboard() {
         {sensors.map((sensor, index) => {
           return (
             <div key={index}>
-              <div className="text-3xl font-bold ">Sensor {sensor.sensorId}</div>
+              <div className="text-3xl font-bold ">
+                Sensor {sensor.sensorId}
+              </div>
               <InfoSensor key={index} data={sensor} config={config} />
             </div>
           );
