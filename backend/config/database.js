@@ -31,7 +31,5 @@ export const redis = await createClient({
   .on("ready", () => console.log("Redis Ready"))
   .on("reconnecting", () => console.log("Redis Reconnecting"))
   .connect();
-redis.del("sensor1");
-redis.del("sensor2");
-redis.del("sensor3");
-redis.del("avg")
+
+redis.flushAll();

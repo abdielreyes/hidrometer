@@ -64,7 +64,8 @@ function HomePage() {
                 <div className="inline-flex items-baseline">
                   Alto
                   <div className="text-sm">
-                    &nbsp;(&lt;{config.LEVEL_ALERT_MAX}&nbsp;{config.UNIT})
+                    &nbsp;(&gt;{config.LEVEL_ALERT_MAX}
+                    &nbsp;{config.UNIT})
                   </div>
                 </div>
               </li>
@@ -82,7 +83,8 @@ function HomePage() {
                 <div className="inline-flex items-baseline">
                   Medio
                   <div className="text-sm">
-                    &nbsp;(&lt;{config.LEVEL_ALERT_MID}&nbsp;{config.UNIT})
+                    &nbsp;(&gt;{config.LEVEL_ALERT_MID}
+                    &nbsp;{config.UNIT})
                   </div>
                 </div>
               </li>
@@ -102,7 +104,8 @@ function HomePage() {
                 <div className="inline-flex items-baseline">
                   Bajo
                   <div className="text-sm">
-                    &nbsp;(&lt;{config.LEVEL_ALERT_MIN}&nbsp;{config.UNIT})
+                    &nbsp;(&gt;{config.LEVEL_ALERT_MIN - config.LEVEL_ALERT_MIN}
+                    &nbsp;{config.UNIT})
                   </div>
                 </div>
               </li>

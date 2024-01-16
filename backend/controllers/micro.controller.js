@@ -1,12 +1,13 @@
 import { redis } from "../config/database.js";
 import mqtt from "../config/mqtt.js";
 import { sendAlert } from "./alert.controller.js";
-const MAX_SIZE = 60;
-const LEVEL_ALERT_MAX = 2;
-const LEVEL_ALERT_MID = 5;
-const LEVEL_ALERT_MIN = 10;
-const TIME_TO_ALERT = 2;
+const MAX_SIZE = 12;
+const LEVEL_ALERT_MAX = 12;
+const LEVEL_ALERT_MID = 8;
+const LEVEL_ALERT_MIN = 0;
+const TIME_TO_ALERT = 1;
 const REFRESH_TIME = 5000;
+const HEIGHT = 20;
 const initialMicro = {
   sensors: [],
   total: {
@@ -23,6 +24,7 @@ const initialMicro = {
     LEVEL_ALERT_MID,
     LEVEL_ALERT_MIN,
     REFRESH_TIME,
+    HEIGHT,
     TIME_TO_ALERT,
     alerted: false,
     last_alert: null,
@@ -31,20 +33,18 @@ const initialMicro = {
 };
 var Micro = initialMicro;
 mqtt.subscribe("hidrometer");
-setInterval(() => {
-  Micro.sensors.forEach((sensor) => {
-    redis.lTrim("sensor" + sensor.sensorId, 0, MAX_SIZE);
-  });
-}, 1000);
+
 mqtt.on("disconnect", () => {
   Micro = initialMicro;
+  redis.flushAll();
   console.log("Sensor disconnected");
 });
 mqtt.on("message", async (topic, message) => {
   try {
     message = JSON.parse(message.toString());
     const { sensorId, data, flag } = message;
-    redis.lPush("sensor" + sensorId, String(data));
+    console.log(HEIGHT - data, data);
+    redis.lPush("sensor" + sensorId, String(HEIGHT - data));
     redis.lTrim("sensor" + sensorId, 0, MAX_SIZE);
     const r = await redis.lRange("sensor" + sensorId, 0, MAX_SIZE);
     // console.log(message);
@@ -56,7 +56,7 @@ mqtt.on("message", async (topic, message) => {
       Micro.sensors[existingSensorIndex] = {
         ...Micro.sensors[existingSensorIndex],
         avg: calculateAverage(r),
-        current: data,
+        current: HEIGHT - data,
         min: Math.min(...r),
         max: Math.max(...r),
         flag,
@@ -65,7 +65,7 @@ mqtt.on("message", async (topic, message) => {
       Micro.sensors.push({
         sensorId,
         avg: calculateAverage(r),
-        current: data,
+        current: HEIGHT - data,
         min: Math.min(...r),
         max: Math.max(...r),
         flag,
@@ -86,18 +86,19 @@ mqtt.on("message", async (topic, message) => {
     Micro.total.min_avg = minAvg;
     Micro.total.max_avg = maxAvg;
     Micro.total.flag = Micro.sensors.some((sensor) => sensor.flag !== 0);
-    if (
-      (Micro.total.flag && Micro.total.current_avg <= LEVEL_ALERT_MAX) ||
-      Micro.total.timetoheight <= TIME_TO_ALERT
-    ) {
+    // if (
+    //   (Micro.total.flag && Micro.total.current_avg <= LEVEL_ALERT_MAX) ||
+    //   Micro.total.timetoheight <= TIME_TO_ALERT
+    // ) {
+    if (Micro.total.flag || Micro.total.current_avg >= LEVEL_ALERT_MAX) {
       Micro.total.alert_level = 2;
-      sendAlert(Micro.total.alert_level);
+      sendAlert(Micro.total.alert_level, Micro);
     } else if (
-      Micro.total.current_avg <= LEVEL_ALERT_MID &&
-      Micro.total.current_avg > LEVEL_ALERT_MAX
+      Micro.total.current_avg >= LEVEL_ALERT_MID &&
+      Micro.total.current_avg < LEVEL_ALERT_MAX
     ) {
       Micro.total.alert_level = 1;
-      sendAlert(Micro.total.alert_level);
+      sendAlert(Micro.total.alert_level, Micro);
     } else {
       Micro.total.alert_level = 0;
       Micro.config.alerted = false;

@@ -2,6 +2,9 @@ import LineChart from "./RiverChart";
 
 function InfoAvg({ data, config }) {
   const toFixed = (num) => {
+    if (num == 0) {
+      return num;
+    }
     if (num) {
       return num.toFixed(2);
     }

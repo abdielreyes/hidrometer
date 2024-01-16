@@ -49,28 +49,31 @@ const saveAlert = async (level, current_avg, min_avg, max_avg) => {
   try {
     await alert.save();
   } catch (error) {
-    console.error(error);
+    console.error("Error saving alert");
   }
 };
 
-export const sendAlert = async (level) => {
+export const sendAlert = async (level, micro) => {
   //send alert to all users phone, given in array
   const phones = await getPhones();
-
+  // console.log(micro);
   if (timeDiff(Micro.config.last_alert, new Date())) {
     console.log("Send alert to phones", phones);
     phones.forEach((phone) => {
       console.log(alert);
+
       saveAlert(
         level,
-        Micro.config.current_avg,
-        Micro.config.min_avg,
-        Micro.config.max_avg
+        micro.total.current_avg,
+        micro.total.min_avg,
+        micro.total.max_avg
       );
       if (level === 2) {
-        sendSMS(phone, ALERT_MESSAGE_2);
+        // sendSMS(phone, ALERT_MESSAGE_2);
+        console.log("send alert level 2 to phone", phone);
       } else if (level === 1) {
-        sendSMS(phone, ALERT_MESSAGE_1);
+        // sendSMS(phone, ALERT_MESSAGE_1);
+        console.log("send alert level 1 to phone", phone);
       }
     });
     // Update configuration for the last alert time

@@ -30,11 +30,6 @@ function HistoryAlerts() {
     setCurrentPage(newPage);
   };
 
-  const paginatedAlerts = alerts.slice(
-    (currentPage - 1) * perPage,
-    currentPage * perPage
-  );
-
   return (
     <div>
       <div className="rounded-lg border-gray-200 py-8 px-10 lg:px-32">
@@ -66,14 +61,16 @@ function HistoryAlerts() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {paginatedAlerts.map((alert) => (
+              {alerts.map((alert) => (
                 <tr key={alert._id}>
                   <td>{alert._id}</td>
                   <td>{alert.alert_level}</td>
                   <td>{alert.current_avg}</td>
                   <td>{alert.min_avg}</td>
                   <td>{alert.max_avg}</td>
-                  <td>{moment(alert.date).format("DD / MMM / YYYY")}</td>
+                  <td>
+                    {moment(alert.date).format("DD / MMM / YYYY HH:MM:SS")}
+                  </td>
                 </tr>
               ))}
             </tbody>
